@@ -1,0 +1,51 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    add-properties: true
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:dan_phong_tro}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:12345678}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+#        format_sql: true
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+    baseline-version: 2
+    baseline-on-migrate: false
+
+logging:
+  level:
+#    org.hibernate.SQL: DEBUG         # Log các SQL statement
+    org.flywaydb.core: DEBUG
+    sql: trace
+#    org.hibernate.type.descriptor.sql: TRACE
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+
+open-api:
+  service:
+    api-docs: demo
+    server: ${SWAGGER_ENDPOINT:http://localhost:8080}
+    title: Api
+    version: 1.0
+jwt:
+  accessKey: ${ACCESS_KEY:b270147ff516860aafb4f52818cb149defde2fac57b451fa3b053d24e88b915a}
+  refreshKey: ${REFRESH_KEY:b270147ff516860aafb4f52818cb149defde2fac57b451fa3b053d24e88b915a}
+  resetKey: ${RESET_KEY:b270147ff516860aafb4f52818cb149defde2fac57b451fa3b053d24e88b915a}
