@@ -3,6 +3,9 @@ package vn.hhh.phong_tro.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Getter
 @Setter
@@ -18,4 +21,7 @@ public class Category {
 
     @Column(nullable = false, length = 100)
     private String name;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<Post> posts = new HashSet<>();
 }

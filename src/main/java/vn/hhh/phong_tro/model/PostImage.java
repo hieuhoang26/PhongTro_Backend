@@ -19,7 +19,9 @@ public class PostImage {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
+    @Column(name = "image_url")
     private String imageUrl;
+    @Column(name = "is_thumbnail")
     private Boolean isThumbnail = false;
 }
 

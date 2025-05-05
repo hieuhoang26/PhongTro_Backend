@@ -5,6 +5,10 @@ import vn.hhh.phong_tro.util.PostStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 @Getter
@@ -33,13 +37,19 @@ public class Post {
     @JoinColumn(name = "type_id")
     private PostType type;
 
-    private Boolean isVip = false;
+    @Column(name = "is_vip")
+    private Integer isVip;
+
+    @Column(name = "vip_expiry_date")
     private LocalDateTime vipExpiryDate;
 
     @Enumerated(EnumType.STRING)
     private PostStatus status = PostStatus.PENDING;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
@@ -47,9 +57,23 @@ public class Post {
         createdAt = updatedAt = LocalDateTime.now();
     }
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<PostImage> images = new ArrayList<>();
+
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PostAddress postAddress;
+
+    @ManyToMany
+    @JoinTable(
+            name = "post_category",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
 }
 

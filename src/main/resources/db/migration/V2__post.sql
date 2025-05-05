@@ -22,7 +22,7 @@ CREATE TABLE posts
     area            FLOAT,
     address         TEXT,
     type_id         BIGINT,
-    is_vip          BOOLEAN                                             DEFAULT FALSE,
+    is_vip          BIGINT,
     vip_expiry_date TIMESTAMP NULL,
     status          ENUM ('PENDING', 'APPROVED', 'EXPIRED', 'REJECTED') DEFAULT 'PENDING',
     created_at      TIMESTAMP                                           DEFAULT CURRENT_TIMESTAMP,

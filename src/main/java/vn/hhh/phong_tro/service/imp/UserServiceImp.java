@@ -170,6 +170,11 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
+    public User getById(Integer id) {
+        return userRepository.findById(Long.valueOf(id)).orElse(null);
+    }
+
+    @Override
     public User getByEmail(String email) {
         return userRepository.findUserByEmail(email).orElse(null);
     }

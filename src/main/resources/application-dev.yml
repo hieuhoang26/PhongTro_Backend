@@ -14,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 #        format_sql: true
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: none
 
@@ -23,14 +23,38 @@ spring:
   flyway:
     locations: classpath:db/migration
     enabled: true
-    baseline-version: 2
+    baseline-version: 3
     baseline-on-migrate: false
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+
+aws:
+  java:
+    v1:
+      printLocation: true
+      disableDeprecationAnnouncement: true
+amazon:
+  s3:
+    bucketName: ${S3_BUCKET_NAME:phongtrodatn}
+    region: ${S3_REGION:us-east-1}
+    accessKey: ${S3_ACCESS_KEY:AKIAVVZOONWNYQCET57A}
+    secretKey: ${S3_REFRESH_KEY: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}
+
 
 logging:
   level:
+    org.springframework.messaging: DEBUG
+    org:
+      springframework:
+        messaging:
+          simp: DEBUG
+    org.springframework.web.socket: DEBUG
 #    org.hibernate.SQL: DEBUG         # Log các SQL statement
-    org.flywaydb.core: DEBUG
-    sql: trace
+#    org.flywaydb.core: DEBUG
+#    sql: trace
 #    org.hibernate.type.descriptor.sql: TRACE
 
 springdoc:

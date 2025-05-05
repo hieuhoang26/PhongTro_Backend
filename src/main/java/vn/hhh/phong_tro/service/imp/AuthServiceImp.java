@@ -59,7 +59,7 @@ public class AuthServiceImp implements AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        System.out.println("Authorities:");
+//        System.out.println("Authorities:");
         user.getAuthorities().forEach(a -> System.out.println(a.getAuthority()));
 
         //Xóa các refresh token cũ (nếu không hỗ trợ đa thiết bị)
@@ -84,6 +84,7 @@ public class AuthServiceImp implements AuthService {
         TokenResponse.TokenResponseBuilder responseBuilder = TokenResponse.builder()
                 .id(String.valueOf(user.getId()))
                 .role(role)
+                .phone(user.getPhone())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .message("Login success");

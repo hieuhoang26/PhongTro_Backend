@@ -14,6 +14,7 @@ public class TokenResponse implements Serializable {
     private String id;
 //    private List<String> roles;
     private String role;
+    private String phone;
     private String accessToken;
     private String refreshToken;
     private String message;

@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import vn.hhh.phong_tro.security.Imp.UserDetailServiceImp;
+import vn.hhh.phong_tro.util.Uri;
 
 import java.io.IOException;
 
@@ -51,10 +52,10 @@ public class PreFilter extends OncePerRequestFilter {
         filterChain.doFilter(request,response);
     }
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-//        String requestUri = request.getRequestURI();
-//        return requestUri.startsWith(Uri.LOGIN)
-//                ||  requestUri.startsWith(Uri.SIGNUP)
-//    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestUri = request.getRequestURI();
+        return requestUri.startsWith(Uri.LOGIN)
+                ||  requestUri.startsWith(Uri.SIGNUP);
+    }
 }

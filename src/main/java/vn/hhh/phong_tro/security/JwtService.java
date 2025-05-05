@@ -1,5 +1,6 @@
 package vn.hhh.phong_tro.security;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import vn.hhh.phong_tro.util.TokenType;
 
@@ -9,4 +10,6 @@ public interface JwtService {
     String generateResetToken(UserDetails user);
     String extractUsername(String token, TokenType type);
     boolean isValid(String token, TokenType type, UserDetails userDetails);
+    boolean validateToken(String token, TokenType type);
+
 }

@@ -19,7 +19,7 @@ public class PostAddress {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @Column(length = 255)
+    @Column(name = "detail_address", length = 255)
     private String detailAddress;
 
     @ManyToOne

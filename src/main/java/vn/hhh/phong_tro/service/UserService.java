@@ -22,5 +22,6 @@ public interface UserService {
     Boolean existPhone(String phone);
 
     User getByPhone(String phone);
+    User getById(Integer id);
     User getByEmail(String email);
 }

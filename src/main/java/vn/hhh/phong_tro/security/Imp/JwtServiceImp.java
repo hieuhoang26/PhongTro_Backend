@@ -6,8 +6,11 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import vn.hhh.phong_tro.exception.InvalidDataException;
@@ -26,7 +29,11 @@ import static vn.hhh.phong_tro.util.TokenType.REFRESH_TOKEN;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class JwtServiceImp implements JwtService {
+
+
+
     private final long accessEpr = 1000 * 60 * 60 * 24; // 24 hours
     private final long refreshEpr = 1000 * 60 * 60 * 24 * 10; // 10 day
 
@@ -124,6 +131,15 @@ public class JwtServiceImp implements JwtService {
 
     private Claims extractAllClaims(String token, TokenType type) {
         return Jwts.parser().setSigningKey(getKey(type)).build().parseClaimsJws(token).getBody();
+    }
+
+    public boolean validateToken(String token, TokenType type) {
+        try {
+            Jwts.parser().setSigningKey(getKey(type)).build().parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 

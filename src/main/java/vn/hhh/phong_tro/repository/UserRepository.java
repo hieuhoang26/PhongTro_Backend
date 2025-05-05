@@ -17,6 +17,8 @@ public interface UserRepository  extends JpaRepository<User, Long> {
     Boolean existsUserByPhone(String phone);
     Optional<User> findByName(String username);
 
+    List<User> findUsersByIdNot(Long id);
+
 //    @Query(value = "select r.name from Role r inner join  ur on r.id = ur.user.id where ur.id= :userId")
 //    List<String> findAllRolesByUserId(Long userId);
 }
