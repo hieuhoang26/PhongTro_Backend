@@ -27,6 +27,9 @@ CREATE TABLE posts
     status          ENUM ('PENDING', 'APPROVED', 'EXPIRED', 'REJECTED') DEFAULT 'PENDING',
     created_at      TIMESTAMP                                           DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP                                           DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    name_contact VARCHAR(255),
+    phone_contact  VARCHAR(255),
+
 
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (type_id) REFERENCES post_types (id)

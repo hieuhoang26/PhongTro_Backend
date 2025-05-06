@@ -2,11 +2,7 @@ package vn.hhh.phong_tro.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vn.hhh.phong_tro.dto.chat.ChatMessage;
-import vn.hhh.phong_tro.model.Notification;
 import vn.hhh.phong_tro.repository.NotificationRepository;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

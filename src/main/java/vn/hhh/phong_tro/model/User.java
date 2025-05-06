@@ -1,4 +1,5 @@
 package vn.hhh.phong_tro.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,6 +50,7 @@ public class User implements UserDetails, Serializable {
     private Date createdAt;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
 //        return List.of();
 //        List<GrantedAuthority> authorities = new ArrayList<>();

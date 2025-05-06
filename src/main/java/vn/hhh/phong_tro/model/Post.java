@@ -52,6 +52,12 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "name_contact")
+    private String nameContact;
+
+    @Column(name = "phone_contact")
+    private String phoneContact;
+
     @PrePersist
     protected void onCreate() {
         createdAt = updatedAt = LocalDateTime.now();

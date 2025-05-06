@@ -18,11 +18,19 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "sender_id")
-    private String senderId;
+    @ManyToOne
+    @JoinColumn(name = "conversation_id")
+    private Conversation conversation;
 
-    @Column(name = "receiver_id")
-    private String receiverId;
+    //    @Column(name = "sender_id")
+//    private String senderId;
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+//    @Column(name = "receiver_id")
+//    private String receiverId;
 
     @Column(columnDefinition = "TEXT", name = "content")
     private String content;

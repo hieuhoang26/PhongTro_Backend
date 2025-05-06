@@ -1,5 +1,6 @@
 package vn.hhh.phong_tro.dto.request.post;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hhh.phong_tro.util.PostStatus;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class CreatePostRequest {
+public class  CreatePostRequest {
     private Integer userId;
     private String title;
     private String description;
@@ -27,4 +28,8 @@ public class CreatePostRequest {
     private Integer wardId;
     private String detailAddress;
     private List<String> categories;
+
+
+    private String nameContact;
+    private String phoneContact;
 }

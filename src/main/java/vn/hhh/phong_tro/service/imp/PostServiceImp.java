@@ -82,6 +82,8 @@ public class PostServiceImp implements PostService {
                 .wardId(Math.toIntExact(post.getPostAddress().getWard().getId()))
                 .districtId(Math.toIntExact(post.getPostAddress().getWard().getDistrict().getId()))
                 .cityId(Math.toIntExact(post.getPostAddress().getWard().getDistrict().getCity().getId()))
+                .nameContact(post.getNameContact() != null ? post.getNameContact() : post.getUser().getName())
+                .phoneContact(post.getPhoneContact() != null ? post.getPhoneContact() : post.getUser().getPhone())
                 .build();
 
 

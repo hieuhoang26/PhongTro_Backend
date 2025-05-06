@@ -28,7 +28,6 @@ public class PostList {
     private LocalDateTime vipExpiryDate;
     private String username;
     private String phone;
-
     private LocalDateTime createdAt;
 }
 

@@ -1,25 +1,26 @@
 package vn.hhh.phong_tro.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import vn.hhh.phong_tro.dto.chat.ChatMessage;
-import vn.hhh.phong_tro.dto.chat.UserChatDto;
+import org.springframework.web.bind.annotation.RequestParam;
+import vn.hhh.phong_tro.dto.chat.ChatMessageRequest;
+import vn.hhh.phong_tro.dto.chat.ConversationDTO;
+import vn.hhh.phong_tro.dto.chat.MessageDTO;
+import vn.hhh.phong_tro.model.Conversation;
 import vn.hhh.phong_tro.model.Message;
-import vn.hhh.phong_tro.service.MessageService;
+import vn.hhh.phong_tro.service.ChatService;
 import vn.hhh.phong_tro.service.NotificationService;
 import vn.hhh.phong_tro.util.Uri;
 
-import java.security.Principal;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -32,29 +33,78 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    private final MessageService messageService;
+    private final ChatService chatService;
 
-    @MessageMapping("/chat.send")
-    public void sendMessage(@Payload ChatMessage dto, Principal principal) {
-        // 1. Save message
-        Message message = messageService.saveMessage(dto);
-        // 2. Send to receiver's WebSocket topic
-        messagingTemplate.convertAndSendToUser(
-                dto.getReceiverId(),
-                "/queue/messages",
-                message
+    // Gửi tin nhắn
+    @MessageMapping("/chat.send") // /app/chat.send
+    public void sendMessage(@Payload ChatMessageRequest messageDTO) {
+        Message message = chatService.saveMessage(
+                messageDTO.getSenderId(),
+                messageDTO.getReceiverId(),
+                messageDTO.getContent(),
+                messageDTO.getContentType()
         );
+
+        Long conversationId = message.getConversation().getId();
+        // Gửi về cho người nhận
+        messagingTemplate.convertAndSend("/topic/conversations-" + conversationId, message);
+    }
+    @Operation(summary = "create or get conversion of user ", description = "Return list ")
+    @GetMapping("/conversation")
+    public ResponseEntity<ConversationDTO> getConversationsBetween(
+            @RequestParam Integer userA,@RequestParam Integer userB) {
+        ConversationDTO conversations = chatService.getOrCreateConversationDTO(Long.valueOf(userA),Long.valueOf(userB));
+        return ResponseEntity.ok(conversations);
+
+    }
+    @Operation(summary = "List conversion of user ", description = "Return list ")
+    @GetMapping("/conversation/list")
+    public ResponseEntity<List<ConversationDTO>> getUserConversations(
+            @RequestParam Long userId) {
+            List<ConversationDTO> conversations = chatService.getUserConversations(userId);
+            return ResponseEntity.ok(conversations);
+
+    }
+    @Operation(summary = "get message of conversion ", description = "Ret ")
+    @GetMapping("/messages")
+    public ResponseEntity<List<MessageDTO>> getMessages(@RequestParam Long conversationId) {
+        List<MessageDTO> messages = chatService.getMessages(conversationId);
+        return ResponseEntity.ok(messages);
     }
 
-    @GetMapping("/conversation/{userA}/{userB}")
-    public ResponseEntity<List<ChatMessage>> getConversation(@PathVariable String userA, @PathVariable String userB) {
-        return ResponseEntity.ok(messageService.getConversation(userA, userB));
-    }
-    @GetMapping("/contacts/{userId}")
-    public ResponseEntity<List<UserChatDto>> getUserContacts(
-            @PathVariable Long userId) {
-        List<UserChatDto> contacts = messageService.getContacts(userId);
-        return ResponseEntity.ok(contacts);
-    }
+
+
+//    private final MessageService messageService;
+
+//    @MessageMapping("/chat.send")
+//    public void sendMessage(@Payload ChatMessage dto, Principal principal) {
+//        // 1. Save message
+//        Message message = messageService.saveMessage(dto);
+//        log.info("message" + message);
+//        // 2. Send to receiver's WebSocket topic
+//        messagingTemplate.convertAndSendToUser(
+//                dto.getReceiverId(),
+//                "/queue/messages",
+//                message
+//        );
+//        log.info("ReceiverId" +   dto.getReceiverId());
+//    }
+
+//    @MessageMapping("/chat/send-by-topic")
+//    public void sendMessageByTopic(@Payload ChatMessage dto, Principal principal) {
+//        // 1. Save message
+//        Message message = messageService.saveMessage(dto);
+//        log.info("message" + message);
+//        // 2. Send to receiver's WebSocket topic
+//        messagingTemplate.convertAndSend(
+//                "/topic/conversation-1",
+//                message
+//        );
+//        log.info("ReceiverId" +   dto.getReceiverId());
+//    }
+
+
+
+
 }
 

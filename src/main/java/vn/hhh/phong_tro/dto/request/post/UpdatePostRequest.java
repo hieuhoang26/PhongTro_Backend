@@ -1,5 +1,6 @@
 package vn.hhh.phong_tro.dto.request.post;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hhh.phong_tro.util.PostStatus;
@@ -26,4 +27,8 @@ public class UpdatePostRequest {
     private Long wardId;
     private String detailAddress;
     private List<Long> categoryIds;
+
+
+//    private String nameContact;
+//    private String phoneContact;
 }

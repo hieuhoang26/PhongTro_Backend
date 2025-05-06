@@ -1,5 +1,6 @@
 package vn.hhh.phong_tro.dto.response.post;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,4 +35,8 @@ public class PostDetailResponse {
     private  Integer wardId;
     private Integer districtId;
     private Integer cityId;
+
+
+    private String nameContact;
+    private String phoneContact;
 }

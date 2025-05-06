@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 public class UserChatDto {
     private Long id;
     private String name;
-    private String color;
     private String phone;
-    private String lastMessage;
-    private Integer unreadCount;
+    private String avatarUrl;
 }

@@ -7,9 +7,9 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatMessage {
-    private String senderId;
-    private String receiverId;
+public class ChatMessageRequest {
+    private Integer senderId;
+    private Integer receiverId;
     private String content;
     private String contentType; // text, image, etc.
 }
