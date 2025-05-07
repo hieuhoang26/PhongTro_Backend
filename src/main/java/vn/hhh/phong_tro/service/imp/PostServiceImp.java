@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hhh.phong_tro.dto.request.post.PostFilterRequest;
@@ -18,6 +19,7 @@ import vn.hhh.phong_tro.exception.ResourceNotFoundException;
 import vn.hhh.phong_tro.model.*;
 import vn.hhh.phong_tro.repository.*;
 import vn.hhh.phong_tro.repository.specification.PostSpecificationsBuilder;
+import vn.hhh.phong_tro.service.FavoriteService;
 import vn.hhh.phong_tro.service.PostService;
 import vn.hhh.phong_tro.service.S3Service;
 import vn.hhh.phong_tro.service.UserService;
@@ -26,6 +28,7 @@ import vn.hhh.phong_tro.util.PostStatus;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,6 +41,7 @@ public class PostServiceImp implements PostService {
     final PostTypeRepository postTypeRepository;
     final WardRepository wardRepository;
     final ImageRepository imageRepository;
+    final FavoriteService favoriteService;
 
     final UserService userService;
     final S3Service s3Service;
@@ -320,9 +324,11 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
-    public PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable) {
+    public PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable,Integer userId) {
 //        System.out.println("Sorting by: " + filter.getSortBy() + " " + filter.getSortDirection());
 //        System.out.println("Page: " + pageable.getPageNumber() + ", Size: " +  pageable.getPageSize());
+
+        Set<Long> likedPostIds = (userId != null) ? favoriteService.getFavoritePostIds(Long.valueOf(userId)) : Collections.emptySet();
 
         Sort sort = Sort.unsorted();
         if (filter.getSortBy() != null && filter.getSortDirection() != null) {
@@ -334,6 +340,9 @@ public class PostServiceImp implements PostService {
 
         PostSpecificationsBuilder builder = new PostSpecificationsBuilder(filter);
         Page<Post> posts = postRepository.findAll(builder.build(), sortedPageable);
+
+//        Set<Long> likedPostIds = (userId != null) ? favoriteService.getFavoritePostIds(userId) : Collections.emptySet();
+
         List<PostList> res = posts.stream().map(post -> {
             String fullAddress = post.getAddress();
             String shortAddress = "";
@@ -345,6 +354,14 @@ public class PostServiceImp implements PostService {
                     .stream()
                     .map(PostImage::getImageUrl)
                     .toList();
+            boolean isLiked;
+            if(userId!=null){
+                isLiked = likedPostIds.contains(post.getId());
+            }
+            else {
+                isLiked = false;
+            }
+
 
             return PostList.builder()
                     .id(post.getId())
@@ -354,6 +371,7 @@ public class PostServiceImp implements PostService {
                     .area(post.getArea())
                     .address(shortAddress)
                     .images(imageUrls)
+                    .isLike(isLiked)
                     .isVip(post.getIsVip())
                     .username(post.getUser().getName())
                     .phone(post.getUser().getPhone())
@@ -368,6 +386,7 @@ public class PostServiceImp implements PostService {
                 .items(res)
                 .build();
     }
+
 
 
 }

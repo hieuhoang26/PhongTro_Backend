@@ -29,5 +29,6 @@ public class PostList {
     private String username;
     private String phone;
     private LocalDateTime createdAt;
+    private Boolean isLike;
 }
 

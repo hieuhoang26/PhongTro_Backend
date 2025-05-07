@@ -19,7 +19,7 @@ public interface PostService {
 
      PageResponse getPostsByUserAndStatus(Long userId, PostStatus status, int page, int size, String sortDirection);
 
-    PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable);
+    PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable, Integer userId);
 
 
 }

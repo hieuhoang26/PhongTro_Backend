@@ -14,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
 #        format_sql: true
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
 
@@ -23,7 +23,7 @@ spring:
   flyway:
     locations: classpath:db/migration
     enabled: true
-    baseline-version: 3
+    baseline-version: 4
     baseline-on-migrate: false
   servlet:
     multipart:

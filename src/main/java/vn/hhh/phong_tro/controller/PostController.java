@@ -60,7 +60,8 @@ public class PostController {
             @RequestParam(required = false) String categoryIds, // nhận dạng chuỗi "1,2"
             @RequestParam(required = false) Integer isVip ,
             @RequestParam(required = false) String sortBy ,
-            @RequestParam(required = false) String sortDirection
+            @RequestParam(required = false) String sortDirection,
+            @RequestParam(required = false) Integer userId
     ) {
         PostFilterRequest filterRequest = new PostFilterRequest();
         filterRequest.setTypeId(typeId);
@@ -83,7 +84,7 @@ public class PostController {
             filterRequest.setCategoryIds(categoryIdList);
         }
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Filter", postService.advanceSearch(filterRequest, pageable));
+        return new ResponseData<>(HttpStatus.OK.value(), "Filter", postService.advanceSearch(filterRequest, pageable,userId));
     }
 
     @Operation(summary = "Create post", description = "")

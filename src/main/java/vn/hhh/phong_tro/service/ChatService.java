@@ -41,6 +41,16 @@ public class ChatService {
                 .map(this::mapMessageToDTO)
                 .collect(Collectors.toList());
     }
+    public UserChatDto getSearchUser(String phone){
+        User user = userRepo.findByPhoneOrName(phone).orElse(null);
+        assert user != null;
+        return UserChatDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .avatarUrl(user.getAvatarUrl())
+                .build();
+    }
 
 
 

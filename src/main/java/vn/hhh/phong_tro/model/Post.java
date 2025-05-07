@@ -81,5 +81,7 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
+
+
 }
 

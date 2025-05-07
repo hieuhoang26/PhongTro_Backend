@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import vn.hhh.phong_tro.dto.chat.ChatMessageRequest;
 import vn.hhh.phong_tro.dto.chat.ConversationDTO;
 import vn.hhh.phong_tro.dto.chat.MessageDTO;
+import vn.hhh.phong_tro.dto.chat.UserChatDto;
 import vn.hhh.phong_tro.model.Conversation;
 import vn.hhh.phong_tro.model.Message;
 import vn.hhh.phong_tro.service.ChatService;
@@ -49,6 +50,13 @@ public class ChatController {
         // Gửi về cho người nhận
         messagingTemplate.convertAndSend("/topic/conversations-" + conversationId, message);
     }
+    @Operation(summary = "searchUserforChat ", description = "")
+    @GetMapping("/search")
+    public ResponseEntity<UserChatDto> searchUserforChat(
+            @RequestParam String phoneOrName) {
+        return ResponseEntity.ok(chatService.getSearchUser(phoneOrName));
+
+    }
     @Operation(summary = "create or get conversion of user ", description = "Return list ")
     @GetMapping("/conversation")
     public ResponseEntity<ConversationDTO> getConversationsBetween(
@@ -65,12 +73,16 @@ public class ChatController {
             return ResponseEntity.ok(conversations);
 
     }
-    @Operation(summary = "get message of conversion ", description = "Ret ")
+    @Operation(summary = "Get messages of conversation", description = "Return list of messages in a conversation")
     @GetMapping("/messages")
     public ResponseEntity<List<MessageDTO>> getMessages(@RequestParam Long conversationId) {
         List<MessageDTO> messages = chatService.getMessages(conversationId);
+        if (messages.isEmpty()) {
+            return ResponseEntity.noContent().build(); // trả về 204 No Content
+        }
         return ResponseEntity.ok(messages);
     }
+
 
 
 

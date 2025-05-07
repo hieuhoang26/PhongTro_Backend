@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.hhh.phong_tro.dto.request.user.UserRequest;
 import vn.hhh.phong_tro.dto.response.PageResponse;
 import vn.hhh.phong_tro.dto.response.user.UserDetailResponse;
@@ -20,6 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class UserServiceImp implements UserService {
 
     final UserRepository userRepository;
