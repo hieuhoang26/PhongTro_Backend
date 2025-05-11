@@ -7,6 +7,7 @@ import vn.hhh.phong_tro.dto.request.post.UpdatePostRequest;
 import vn.hhh.phong_tro.dto.response.PageResponse;
 import vn.hhh.phong_tro.dto.response.post.PostDetailResponse;
 import vn.hhh.phong_tro.dto.response.post.PostList;
+import vn.hhh.phong_tro.model.Post;
 import vn.hhh.phong_tro.util.PostStatus;
 
 public interface PostService {
@@ -20,6 +21,8 @@ public interface PostService {
      PageResponse getPostsByUserAndStatus(Long userId, PostStatus status, int page, int size, String sortDirection);
 
     PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable, Integer userId);
+
+    Post getById(Long id);
 
 
 }

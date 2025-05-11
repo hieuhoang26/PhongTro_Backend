@@ -23,5 +23,8 @@ public class Uri {
     /* Favor */
     public static final String Favor = "/api/v1/favor";
 
+    /* Pay */
+    public static final String Pay = "/api/v1/pay";
+
 
 }

@@ -387,6 +387,10 @@ public class PostServiceImp implements PostService {
                 .build();
     }
 
+    @Override
+    public Post getById(Long id) {
+        return postRepository.findById(id).orElse(null);
+    }
 
 
 }

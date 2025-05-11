@@ -24,7 +24,7 @@ CREATE TABLE posts
     type_id         BIGINT,
     is_vip          BIGINT,
     vip_expiry_date TIMESTAMP NULL,
-    status          ENUM ('PENDING', 'APPROVED', 'EXPIRED', 'REJECTED') DEFAULT 'PENDING',
+    status          ENUM ('PENDING', 'APPROVED', 'EXPIRED', 'REJECTED', 'PAYING') DEFAULT 'PENDING',
     created_at      TIMESTAMP                                           DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP                                           DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     name_contact VARCHAR(255),
