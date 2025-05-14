@@ -45,22 +45,17 @@ public class VNPayController {
         return vnpayService.processVNPayReturn(allParams);
     }
 
-    // 2. Xử lý callback từ VNPay
+    // Hiển thị kết quả trên trình duyệt người dùng (không xử lý logic)
 //    @GetMapping("/return")
-//    public ResponseEntity<?> handleReturn(@RequestParam Map<String, String> allParams) {
-//        String vnp_ResponseCode = allParams.get("vnp_ResponseCode");
-//        String vnp_Amount = allParams.get("vnp_Amount");
-//        String vnp_TxnRef = allParams.get("vnp_TxnRef");
-//        String vnp_SecureHash = allParams.get("vnp_SecureHash");
+//    public ResponseEntity<String> handleReturnUI(@RequestParam Map<String, String> params) {
+//        String result = "Thanh toán " + ("00".equals(params.get("vnp_ResponseCode")) ? "thành công" : "thất bại");
+//        return ResponseEntity.ok(result);
+//    }
 //
-//        // TODO: validate chữ ký (nếu cần)
-//        if ("00".equals(vnp_ResponseCode)) {
-//            BigDecimal amount = new BigDecimal(vnp_Amount).divide(BigDecimal.valueOf(100));
-//
-//            return ResponseEntity.ok("Nạp tiền thành công");
-//        }
-//
-//        return ResponseEntity.status(400).body("Thanh toán thất bại hoặc bị hủy");
+//    // IPN (server-to-server): xử lý chính xác giao dịch
+//    @PostMapping("/ipn")
+//    public ResponseEntity<?> handleIpn(@RequestParam Map<String, String> params) {
+//        return vnPayService.processVNPayReturn(params);
 //    }
 
 }

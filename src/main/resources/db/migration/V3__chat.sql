@@ -34,7 +34,6 @@ CREATE TABLE notifications (
                                type VARCHAR(50),               -- e.g., 'message', 'system', 'post_update'
                                title VARCHAR(255),
                                content TEXT,
-#                                target_url VARCHAR(500),       -- để điều hướng khi user click
                                is_read BOOLEAN DEFAULT FALSE,
                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                FOREIGN KEY (user_id) REFERENCES users(id)

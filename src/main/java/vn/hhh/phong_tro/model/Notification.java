@@ -27,9 +27,6 @@ public class Notification {
     @Column(columnDefinition = "TEXT", name = "content")
     private String content;
 
-//    @Column(name = "is_read")
-//    private String targetUrl;
-
     @Column(name = "is_read")
     private Boolean isRead = false;
 

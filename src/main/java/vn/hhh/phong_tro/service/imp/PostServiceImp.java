@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hhh.phong_tro.dto.request.post.PostFilterRequest;
@@ -23,9 +22,9 @@ import vn.hhh.phong_tro.service.FavoriteService;
 import vn.hhh.phong_tro.service.PostService;
 import vn.hhh.phong_tro.service.S3Service;
 import vn.hhh.phong_tro.service.UserService;
+import vn.hhh.phong_tro.util.GeoUtil;
 import vn.hhh.phong_tro.util.PostStatus;
 
-import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +41,7 @@ public class PostServiceImp implements PostService {
     final WardRepository wardRepository;
     final ImageRepository imageRepository;
     final FavoriteService favoriteService;
+    final CustomGeoHash customGeoHash;
 
     final UserService userService;
     final S3Service s3Service;
@@ -388,8 +388,45 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
+    public List<PostList> getNearby(Double lat, Double lng, Integer typeId) {
+//        List<Post> posts = postRepository.findNearbyPostsByType(lat, lng, Long.valueOf(typeId));
+        Set<String> geoHashes = GeoUtil.getGeoHashSearchAreas(lat, lng, 6);
+        System.out.println(geoHashes);
+//        List<Post> posts = postRepository.findNearbyPostsByType(geoHashes, Long.valueOf(typeId));
+        List<Post> posts = customGeoHash.findNearbyPostsByGeoHashPrefixes(geoHashes, Long.valueOf(typeId));
+
+        List<PostList> res = posts.stream().map(post -> {
+            List<String> imageUrls = post.getImages()
+                    .stream()
+                    .map(PostImage::getImageUrl)
+                    .toList();
+            return PostList.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .description(post.getDescription())
+                    .price(post.getPrice())
+                    .area(post.getArea())
+                    .address(post.getAddress())
+                    .images(imageUrls)
+                    .isVip(post.getIsVip())
+                    .username(post.getUser().getName())
+                    .phone(post.getUser().getPhone())
+                    .longitude(post.getPostAddress().getLongitude())
+                    .latitude(post.getPostAddress().getLatitude())
+                    .createdAt(post.getCreatedAt())
+                    .build();
+        }).toList();
+        return res;
+    }
+
+    @Override
     public Post getById(Long id) {
         return postRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void save(Post post) {
+        postRepository.save(post);
     }
 
 

@@ -20,11 +20,16 @@ public class Uri {
     /* Chat */
     public static final String Chat = "/api/v1/chat";
 
+    /* Notifications */
+
+    public static final String Notifications = "/api/v1/notification";
+
     /* Favor */
     public static final String Favor = "/api/v1/favor";
 
     /* Pay */
     public static final String Pay = "/api/v1/pay";
+
 
 
 }

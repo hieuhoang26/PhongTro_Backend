@@ -8,5 +8,7 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByUserOrderByCreatedAtDesc(User user);
+
+    boolean existsByDescription(String transactionCode);
 }
 

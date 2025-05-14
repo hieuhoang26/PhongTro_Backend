@@ -49,6 +49,7 @@ vnpay:
   payUrl: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
 #  returnUrl: http://localhost:8080/api/v1/pay/return
   returnUrl: http://localhost:5173/vnpay-return
+  ipnUrl: http://localhost:8080/api/v1/pay/ipn
 
 
 

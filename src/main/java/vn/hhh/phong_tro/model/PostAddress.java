@@ -26,6 +26,12 @@ public class PostAddress {
     @JoinColumn(name = "ward_id", nullable = false)
     private Ward ward;
 
+    @Column(name = "latitude")
     private Double latitude;
+
+    @Column(name = "longitude")
     private Double longitude;
+
+    @Column(name = "geo_hash")
+    private String geoHash;
 }

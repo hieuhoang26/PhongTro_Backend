@@ -91,6 +91,7 @@ CREATE TABLE posts_addresses
     ward_id        BIGINT NOT NULL,
     latitude       DOUBLE,       -- optional (cho map)
     longitude      DOUBLE,       -- optional (cho map)
+    geo_hash       VARCHAR(12),       -- optional (cho map)
     FOREIGN KEY (post_id) REFERENCES posts (id),
     FOREIGN KEY (ward_id) REFERENCES wards (id)
 );

@@ -45,6 +45,20 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.getPostsByUserAndStatus(userId, status, page, size, sort));
     }
+    @GetMapping("/nearby")
+    public ResponseData<?> searchNearby(
+            @RequestParam Double lat,
+            @RequestParam Double lng,
+//            @RequestParam(defaultValue = "5", required = false) Double radiusKm,
+            @RequestParam(required = false, defaultValue = "1") Integer typeId
+    ) {
+        try {
+            return new ResponseData<>(HttpStatus.OK.value(), "Create post success",postService.getNearby(lat,lng, typeId));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
     @Operation(summary = "Advance search", description = "Return list ")
     @GetMapping("/filter")
     public ResponseData<?> advanceSearch(

@@ -106,6 +106,12 @@ public class PayService {
                 .collect(Collectors.toList());
     }
 
+    public boolean isTransactionProcessed(String txnRef) {
+        return transactionRepository.existsByDescription(txnRef);
+//                || orderRepository.existsByPaymentMethod(txnRef);
+    }
+
+
     private OrderDto mapToDto(Order order) {
         return OrderDto.builder()
                 .id(order.getId())

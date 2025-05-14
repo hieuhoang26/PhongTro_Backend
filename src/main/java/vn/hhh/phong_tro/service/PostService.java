@@ -10,6 +10,8 @@ import vn.hhh.phong_tro.dto.response.post.PostList;
 import vn.hhh.phong_tro.model.Post;
 import vn.hhh.phong_tro.util.PostStatus;
 
+import java.util.List;
+
 public interface PostService {
 //    void addPost()
     PostDetailResponse getPostById(Long id);
@@ -22,7 +24,11 @@ public interface PostService {
 
     PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable, Integer userId);
 
+    List<PostList> getNearby(Double lat, Double lng, Integer typeId);
+
     Post getById(Long id);
+
+    void save(Post post);
 
 
 }

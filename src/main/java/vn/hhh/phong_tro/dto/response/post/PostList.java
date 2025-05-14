@@ -30,5 +30,8 @@ public class PostList {
     private String phone;
     private LocalDateTime createdAt;
     private Boolean isLike;
+    private Double latitude;
+    private Double longitude;
+
 }
 

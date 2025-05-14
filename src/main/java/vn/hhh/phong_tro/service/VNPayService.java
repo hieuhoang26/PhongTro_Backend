@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import vn.hhh.phong_tro.model.Post;
 import vn.hhh.phong_tro.util.OrderStatus;
+import vn.hhh.phong_tro.util.PostStatus;
 import vn.hhh.phong_tro.util.TransactionType;
 
 import javax.crypto.Mac;
@@ -39,6 +40,9 @@ public class VNPayService {
     @Value("${vnpay.returnUrl}")
     private String vnp_ReturnUrl;
 
+    @Value("${vnpay.ipnUrl}")
+    private String vnp_IpnUrl;
+
     private final UserService userService;
     private  final PayService payService;
     private final PostService postService;
@@ -69,6 +73,7 @@ public class VNPayService {
         vnp_Params.put("vnp_OrderType", vnp_OrderType);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
+//        vnp_Params.put("vnp_IpnUrl", vnp_IpnUrl);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
@@ -103,15 +108,18 @@ public class VNPayService {
         }
 
         try {
+            if (payService.isTransactionProcessed(txnRef)) {
+                return ResponseEntity.ok("Giao dịch đã được xử lý trước đó");
+            }
             BigDecimal amount = new BigDecimal(amountStr).divide(BigDecimal.valueOf(100));
             String[] parts = txnRef.split("_");
             String type = parts[0];
 
             switch (type) {
                 case "topup":
-                    return handleTopUp(parts, amount);
+                    return handleTopUp(parts, amount,txnRef);
                 case "vip":
-                    return handleVipPurchase(parts, amount);
+                    return handleVipPurchase(parts, amount,txnRef);
                 default:
                     return ResponseEntity.badRequest().body("Loại giao dịch không hợp lệ");
             }
@@ -121,26 +129,31 @@ public class VNPayService {
         }
     }
 
-    private ResponseEntity<?> handleTopUp(String[] parts, BigDecimal amount) {
+    private ResponseEntity<?> handleTopUp(String[] parts, BigDecimal amount,String txnRef) {
         Integer userId = Integer.parseInt(parts[1]);
-//        User user = userService.findById(userId);
         payService.updateBalance(userId, amount);
-        payService.record(userId, TransactionType.TOP_UP, amount, "VNPay", "Nạp tiền VNPay");
-
+        payService.record(userId, TransactionType.TOP_UP, amount, "VNPay",txnRef );
         return ResponseEntity.ok("Nạp tiền thành công");
     }
 
-    private ResponseEntity<?> handleVipPurchase(String[] parts, BigDecimal amount) {
+    private ResponseEntity<?> handleVipPurchase(String[] parts, BigDecimal amount,String txnRef) {
 
         Integer userId = Integer.parseInt(parts[1]);
         Integer postId = Integer.parseInt(parts[2]);
 
+        payService.record(userId, TransactionType.PAYMENT, amount, "VNPay", txnRef);
         payService.createOrder(userId, postId, amount, "VNPay", OrderStatus.COMPLETED);
-        payService.record(userId, TransactionType.PAYMENT, amount, "VNPay", "Mua bài VIP qua VNPay");
-//        Post post = postService.getById(Long.valueOf(postId));
+
+        Post post = postService.getById(Long.valueOf(postId));
+        if(post.getIsVip()==5){
+            post.setStatus(PostStatus.APPROVED);
+        }
+        else {
+            post.setStatus(PostStatus.PENDING);
+        }
 //        post.setIsVip(6);
 //        post.setVipExpiryDate(LocalDateTime.now().plusDays(7));
-//        postService.save(post);
+        postService.save(post);
         return ResponseEntity.ok("Mua VIP thành công");
     }
     private String hmacSHA512(String key, String data) {
