@@ -22,6 +22,7 @@ import vn.hhh.phong_tro.util.PostStatus;
 import vn.hhh.phong_tro.util.Uri;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public class PostController {
     ) {
         return ResponseEntity.ok(postService.getPostsByUserAndStatus(userId, status, page, size, sort));
     }
+
     @GetMapping("/nearby")
     public ResponseData<?> searchNearby(
             @RequestParam Double lat,
@@ -53,7 +55,7 @@ public class PostController {
             @RequestParam(required = false, defaultValue = "1") Integer typeId
     ) {
         try {
-            return new ResponseData<>(HttpStatus.OK.value(), "Create post success",postService.getNearby(lat,lng, typeId));
+            return new ResponseData<>(HttpStatus.OK.value(), "Create post success", postService.getNearby(lat, lng, typeId));
         } catch (Exception e) {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
@@ -72,8 +74,9 @@ public class PostController {
             @RequestParam(required = false) Long districtId,
             @RequestParam(required = false) Long wardId,
             @RequestParam(required = false) String categoryIds, // nhận dạng chuỗi "1,2"
-            @RequestParam(required = false) Integer isVip ,
-            @RequestParam(required = false) String sortBy ,
+            @RequestParam(required = false) Integer isVip,
+            @RequestParam(required = false) PostStatus status,
+            @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortDirection,
             @RequestParam(required = false) Integer userId
     ) {
@@ -88,6 +91,7 @@ public class PostController {
         filterRequest.setWardId(wardId);
         filterRequest.setIsVip(isVip);
         filterRequest.setSortBy(sortBy);
+        filterRequest.setStatus(status);
         filterRequest.setSortDirection(sortDirection);
 
         if (categoryIds != null && !categoryIds.isBlank()) {
@@ -98,7 +102,7 @@ public class PostController {
             filterRequest.setCategoryIds(categoryIdList);
         }
 
-        return new ResponseData<>(HttpStatus.OK.value(), "Filter", postService.advanceSearch(filterRequest, pageable,userId));
+        return new ResponseData<>(HttpStatus.OK.value(), "Filter", postService.advanceSearch(filterRequest, pageable, userId));
     }
 
     @Operation(summary = "Create post", description = "")
@@ -110,11 +114,12 @@ public class PostController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
     @Operation(summary = "Update post", description = "")
     @PutMapping("/{postId}")
-    public ResponseData<?> updatePost(@PathVariable Integer postId,@ModelAttribute UpdatePostRequest request) {
+    public ResponseData<?> updatePost(@PathVariable Integer postId, @ModelAttribute UpdatePostRequest request) {
         try {
-            postService.updatePost(Long.valueOf(postId),request);
+            postService.updatePost(Long.valueOf(postId), request);
             return new ResponseData<>(HttpStatus.OK.value(), "Update post success");
         } catch (Exception e) {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
@@ -131,6 +136,21 @@ public class PostController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+
+//    @Operation(summary = "Renew  of post", description = "")
+//    @PatchMapping("/renew")
+//    public ResponseData<?> reNewPostVip(
+//            @RequestParam Long postId,
+//            @RequestParam Integer isVip,
+//            @RequestParam LocalDateTime dateTime) {
+//        try {
+//            postService.renewVip(postId, isVip, dateTime);
+//            return new ResponseData<>(HttpStatus.OK.value(), "change vip post successfully");
+//        } catch (Exception e) {
+//            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+//        }
+//    }
+
     @Operation(summary = "Change Status of post", description = "")
     @PatchMapping("/{postId}")
     public ResponseData<?> changePostStatus(

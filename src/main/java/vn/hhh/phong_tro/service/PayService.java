@@ -10,9 +10,11 @@ import vn.hhh.phong_tro.repository.OrderRepository;
 import vn.hhh.phong_tro.repository.TransactionRepository;
 import vn.hhh.phong_tro.repository.WalletRepository;
 import vn.hhh.phong_tro.util.OrderStatus;
+import vn.hhh.phong_tro.util.PostStatus;
 import vn.hhh.phong_tro.util.TransactionType;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,11 +28,11 @@ public class PayService {
 
     private final OrderRepository orderRepository;
 
-    private  final UserService userService;
+    private final UserService userService;
     private final PostService postService;
 
     public Wallet getOrCreateWallet(Integer userId) {
-        User  user = userService.getById(userId);
+        User user = userService.getById(userId);
         return walletRepository.findByUser(user)
                 .orElseGet(() -> {
                     Wallet wallet = new Wallet();
@@ -50,8 +52,46 @@ public class PayService {
         return walletRepository.save(wallet);
     }
 
+    public Integer createOrderByWallet(Integer userId, Integer postId, BigDecimal amount, Integer isVip, LocalDateTime dateTime) {
+        Wallet wallet = getOrCreateWallet(userId);
+
+        // Kiểm tra số dư
+        if (wallet.getBalance().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Số dư ví không đủ để thanh toán.");
+        }
+
+        // Ghi nhận giao dịch
+        record(userId, TransactionType.PAYMENT, amount, "Wallet", "Thanh toán ví tk");
+
+        // Cập nhật số dư
+        wallet.setBalance(wallet.getBalance().subtract(amount));
+        walletRepository.save(wallet);
+
+        // Tạo đơn hàng
+        OrderDto order = createOrder(userId, postId, amount, "Wallet", OrderStatus.COMPLETED);
+        Post post = postService.getById(Long.valueOf(postId));
+
+        //        Change status when create
+        if(post.getIsVip()==5){
+            post.setStatus(PostStatus.APPROVED);
+        }
+        else {
+            post.setStatus(PostStatus.PENDING);
+        }
+//        renew vip
+        if (isVip != null) {
+            post.setIsVip(isVip);
+        }
+        if (dateTime != null) {
+            post.setVipExpiryDate(dateTime);
+        }
+        postService.save(post);
+        return Math.toIntExact(order.getId());
+    }
+
+
     public TransactionDto record(Integer userId, TransactionType type, BigDecimal amount, String method, String desc) {
-        User  user = userService.getById(userId);
+        User user = userService.getById(userId);
         Transaction tx = new Transaction();
         tx.setUser(user);
         tx.setType(type);
@@ -71,8 +111,8 @@ public class PayService {
     }
 
     public List<TransactionDto> getHistory(Integer userId) {
-        User  user = userService.getById(userId);
-        List<Transaction> trans =  transactionRepository.findByUserOrderByCreatedAtDesc(user);
+        User user = userService.getById(userId);
+        List<Transaction> trans = transactionRepository.findByUserOrderByCreatedAtDesc(user);
         return trans.stream().map(transaction -> {
             return TransactionDto.builder()
                     .id(transaction.getId())
@@ -85,6 +125,7 @@ public class PayService {
                     .build();
         }).toList();
     }
+
     public OrderDto createOrder(Integer userId, Integer postId, BigDecimal amount, String method, OrderStatus status) {
         User user = userService.getById(userId);
         Post post = postService.getById(Long.valueOf(postId));

@@ -22,6 +22,7 @@ public class PostSpecificationsBuilder {
                 .and(hasDistrict())
                 .and(hasWard())
                 .and(hasCategories())
+                .and(hasStatus())
                 .and(hasIsVip());
     }
 
@@ -96,6 +97,13 @@ public class PostSpecificationsBuilder {
             return cb.equal(root.get("isVip"), filter.getIsVip());
         };
     }
+    private Specification<Post> hasStatus() {
+        return (root, query, cb) -> {
+            if (filter.getStatus() == null) return null;
+            return cb.equal(root.get("status"), filter.getStatus());
+        };
+    }
+
 
 }
 

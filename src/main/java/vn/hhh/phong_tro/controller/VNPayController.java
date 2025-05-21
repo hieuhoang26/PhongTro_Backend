@@ -12,6 +12,7 @@ import vn.hhh.phong_tro.util.Uri;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
@@ -28,11 +29,13 @@ public class VNPayController {
                                            @RequestParam TransactionType type,
                                            @RequestParam Integer userId,
                                            @RequestParam(required = false) Integer postId,
+                                           @RequestParam(required = false) Integer isVip,
+                                           @RequestParam(required = false) LocalDateTime dateTime,
                                            HttpServletRequest request) {
         try {
             String orderInfo = "Nạp tiền vào tài khoản";
 
-            String paymentUrl = vnpayService.createPaymentUrl(amount, orderInfo,type,userId,postId, request);
+            String paymentUrl = vnpayService.createPaymentUrl(amount, orderInfo,type,userId,postId,isVip,dateTime, request);
             return ResponseEntity.ok(Map.of("paymentUrl", paymentUrl));
 
         } catch (Exception e) {

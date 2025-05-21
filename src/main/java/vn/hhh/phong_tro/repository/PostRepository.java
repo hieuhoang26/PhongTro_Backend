@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import vn.hhh.phong_tro.dto.response.statistic.PostStatistic;
+import vn.hhh.phong_tro.dto.response.statistic.StatusStatistic;
+import vn.hhh.phong_tro.dto.response.statistic.TypeStatistic;
 import vn.hhh.phong_tro.model.Post;
 import vn.hhh.phong_tro.util.PostStatus;
 
@@ -22,6 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 
     Page<Post> findByUserIdAndStatus(Long userId, PostStatus status, Pageable pageable);
 
+    Long countByUserId(Long userId);
     @Query(value = """
                 SELECT p.* FROM posts p
                 JOIN posts_addresses a ON p.id = a.post_id
@@ -33,6 +37,30 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
             @Param("geoHashes") Collection<String> geoHashes,
             @Param("typeId") Long typeId
     );
+    // Statistic
 
+    @Query("SELECT COUNT(p) FROM Post p")
+    long countPosts();
+
+
+    @Query(value = "SELECT DATE(created_at) as date, COUNT(*) as postCount " +
+            "FROM posts " +
+            "GROUP BY DATE(created_at) " +
+            "ORDER BY DATE(created_at) ASC", nativeQuery = true)
+    List<Object[]> countPostsByDateNative();
+
+
+    // Thống kê theo trạng thái
+    @Query("SELECT new vn.hhh.phong_tro.dto.response.statistic.StatusStatistic(p.status, COUNT(p)) " +
+            "FROM Post p GROUP BY p.status")
+    List<StatusStatistic> countPostByStatus();
+
+    // Thống kê theo loại phòng
+//    @Query("SELECT new vn.hhh.phong_tro.dto.response.statistic.TypeStatistic(pt.name, COUNT(p)) " +
+//            "FROM Post p JOIN p.type pt GROUP BY pt.name")
+    @Query("SELECT new vn.hhh.phong_tro.dto.response.statistic.TypeStatistic(pt.name, COUNT(p)) " +
+            "FROM PostType pt LEFT JOIN pt.posts p " +
+            "GROUP BY pt.name")
+    List<TypeStatistic> countPostByType();
 
 }

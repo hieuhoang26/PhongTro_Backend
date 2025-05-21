@@ -18,10 +18,7 @@ import vn.hhh.phong_tro.exception.ResourceNotFoundException;
 import vn.hhh.phong_tro.model.*;
 import vn.hhh.phong_tro.repository.*;
 import vn.hhh.phong_tro.repository.specification.PostSpecificationsBuilder;
-import vn.hhh.phong_tro.service.FavoriteService;
-import vn.hhh.phong_tro.service.PostService;
-import vn.hhh.phong_tro.service.S3Service;
-import vn.hhh.phong_tro.service.UserService;
+import vn.hhh.phong_tro.service.*;
 import vn.hhh.phong_tro.util.GeoUtil;
 import vn.hhh.phong_tro.util.PostStatus;
 
@@ -42,6 +39,7 @@ public class PostServiceImp implements PostService {
     final ImageRepository imageRepository;
     final FavoriteService favoriteService;
     final CustomGeoHash customGeoHash;
+    final VerifyService verifyService;
 
     final UserService userService;
     final S3Service s3Service;
@@ -99,6 +97,13 @@ public class PostServiceImp implements PostService {
 
 
         User user = userService.getById(request.getUserId());
+        boolean isVerified = verifyService.checkIfUserVerified(user.getId());
+        Long postCount = postRepository.countByUserId(user.getId());
+
+        if (!isVerified && postCount >= 2) {
+            throw new RuntimeException("Tài khoản chưa xác thực CCCD, chỉ được đăng tối đa 2 bài.");
+        }
+
 
         PostType type = postTypeRepository.findById(request.getTypeId())
                 .orElseThrow(() -> new RuntimeException("Type not found"));
@@ -264,6 +269,15 @@ public class PostServiceImp implements PostService {
         postRepository.save(post);
     }
 
+//    @Override
+//    public void renewVip(Long postId, Integer isVip, LocalDateTime vipExpiryDate) {
+//        Post post = postRepository.findById(postId)
+//                .orElseThrow(() -> new RuntimeException("Post not found"));
+//        post.setIsVip(isVip);
+//        post.setVipExpiryDate(vipExpiryDate);
+//        postRepository.save(post);
+//    }
+
     @Override
     public void deletePost(Long id) {
         if (!postRepository.existsById(id)) {
@@ -314,7 +328,7 @@ public class PostServiceImp implements PostService {
                     .build();
         }).toList();
 
-        return  PageResponse.builder()
+        return PageResponse.builder()
                 .page(pageable.getPageNumber())
                 .size(pageable.getPageSize())
                 .total(postPage.getTotalPages())
@@ -324,7 +338,7 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
-    public PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable,Integer userId) {
+    public PageResponse<?> advanceSearch(PostFilterRequest filter, Pageable pageable, Integer userId) {
 //        System.out.println("Sorting by: " + filter.getSortBy() + " " + filter.getSortDirection());
 //        System.out.println("Page: " + pageable.getPageNumber() + ", Size: " +  pageable.getPageSize());
 
@@ -355,10 +369,9 @@ public class PostServiceImp implements PostService {
                     .map(PostImage::getImageUrl)
                     .toList();
             boolean isLiked;
-            if(userId!=null){
+            if (userId != null) {
                 isLiked = likedPostIds.contains(post.getId());
-            }
-            else {
+            } else {
                 isLiked = false;
             }
 

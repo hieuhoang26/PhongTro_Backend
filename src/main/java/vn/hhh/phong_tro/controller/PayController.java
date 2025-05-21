@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import vn.hhh.phong_tro.dto.request.PayByWalletRequest;
 import vn.hhh.phong_tro.dto.response.ResponseData;
 import vn.hhh.phong_tro.dto.response.ResponseError;
 import vn.hhh.phong_tro.dto.response.pay.OrderDto;
@@ -39,8 +40,30 @@ public class PayController {
         return ResponseEntity.ok(balance);
     }
 
-    @PostMapping("/wallet")
-    public ResponseEntity<Wallet> updateWallet(@RequestParam Integer userId, @RequestParam BigDecimal amount) {
+
+    @Operation(summary = "Create order by wallet", description = "Thanh toán bằng ví và tạo đơn hàng")
+    @PostMapping("/pay-by-wallet")
+    public ResponseData<?> payByWallet(@RequestBody PayByWalletRequest request) {
+        try {
+            Integer orderId = payService.createOrderByWallet(
+                    request.getUserId(),
+                    request.getPostId(),
+                    request.getAmount(),
+                    request.getIsVip(),
+                    request.getDateTime()
+            );
+            return new ResponseData<>(HttpStatus.OK.value(), "Thanh toán thành công", orderId);
+        } catch (IllegalArgumentException e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Lỗi hệ thống khi thanh toán");
+        }
+    }
+
+
+
+    @PostMapping("/wallet-order")
+    public ResponseEntity<Wallet> OrderByWallet(@RequestParam Integer userId, @RequestParam BigDecimal amount) {
         Wallet wallet = payService.updateBalance(userId, amount);
         return ResponseEntity.ok(wallet);
     }

@@ -27,10 +27,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findUsersByIdNot(Long id);
 
-//    @Query("SELECT u FROM User u LEFT JOIN FETCH u.favoritePosts WHERE u.id = :userId")
-//    Optional<User> findByIdWithFavoritePosts(@Param("userId") Long userId);
-
-
-//    @Query(value = "select r.name from Role r inner join  ur on r.id = ur.user.id where ur.id= :userId")
-//    List<String> findAllRolesByUserId(Long userId);
+    @Query("SELECT COUNT(u) FROM User u")
+    long countUsers();
 }

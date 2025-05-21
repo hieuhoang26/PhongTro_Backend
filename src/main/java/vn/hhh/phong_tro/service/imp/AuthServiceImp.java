@@ -29,6 +29,7 @@ import vn.hhh.phong_tro.security.JwtService;
 import vn.hhh.phong_tro.service.AuthService;
 import vn.hhh.phong_tro.service.RoleService;
 import vn.hhh.phong_tro.service.UserService;
+import vn.hhh.phong_tro.service.VerifyService;
 import vn.hhh.phong_tro.util.TokenType;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class AuthServiceImp implements AuthService {
     final UserService userService;
     final UserDetailServiceImp userDetailServiceImp;
     final RoleService roleService;
+    final VerifyService verifyService;
 
 
     @Override
@@ -80,13 +82,14 @@ public class AuthServiceImp implements AuthService {
 //                .map(GrantedAuthority::getAuthority)
 //                .filter(auth -> !auth.startsWith("ROLE_"))
 //                .toList();
-
+        boolean isVerify = verifyService.checkIfUserVerified(user.getId());
         TokenResponse.TokenResponseBuilder responseBuilder = TokenResponse.builder()
                 .id(String.valueOf(user.getId()))
                 .role(role)
                 .phone(user.getPhone())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .verify(isVerify)
                 .message("Login success");
 
         //save token to db

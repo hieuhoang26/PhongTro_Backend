@@ -30,6 +30,13 @@ public class Uri {
     /* Pay */
     public static final String Pay = "/api/v1/pay";
 
+    /* Statistic */
+
+    public static final String Statistic = "/api/v1/statistic";
+
+    /* Verify */
+    public static final String Verify = "/api/v1/verify";
+
 
 
 }

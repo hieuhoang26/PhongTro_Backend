@@ -56,6 +56,8 @@ public class PreFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String requestUri = request.getRequestURI();
         return requestUri.startsWith(Uri.LOGIN)
-                ||  requestUri.startsWith(Uri.SIGNUP);
+                ||  requestUri.startsWith(Uri.SIGNUP)
+                || requestUri.startsWith("/webhook")
+                || requestUri.startsWith("/bot");
     }
 }

@@ -2,6 +2,8 @@ package vn.hhh.phong_tro.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -20,4 +22,7 @@ public class PostType {
 
     @Column(nullable = false, length = 100)
     private String name;
+
+    @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
+    private List<Post> posts;
 }

@@ -47,7 +47,7 @@ public class VNPayService {
     private  final PayService payService;
     private final PostService postService;
 
-    public String createPaymentUrl(BigDecimal amount, String orderInfo, TransactionType type,Integer userId,Integer postId, HttpServletRequest request) throws UnsupportedEncodingException {
+    public String createPaymentUrl(BigDecimal amount, String orderInfo, TransactionType type,Integer userId,Integer postId, Integer isVip, LocalDateTime dateTime, HttpServletRequest request) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String vnp_OrderType = "other";
@@ -57,6 +57,9 @@ public class VNPayService {
         }
         else {
             vnp_TxnRef = "vip_" + userId + "_"+ postId + "_" + System.currentTimeMillis();
+            if(isVip!= null && dateTime != null){
+                vnp_TxnRef = "vip_" + userId + "_"+ postId + "_"+  isVip + "_"+  dateTime + "_"+ System.currentTimeMillis();
+            }
         }
 
         String vnp_IpAddr = request.getRemoteAddr();
@@ -140,16 +143,33 @@ public class VNPayService {
 
         Integer userId = Integer.parseInt(parts[1]);
         Integer postId = Integer.parseInt(parts[2]);
+        // Mặc định
+        Integer isVip = 0;
+        LocalDateTime vipExpiryDate = null;
+
+        // Nếu có thêm isVip và dateTime
+        if (parts.length >= 5) {
+            isVip = Integer.parseInt(parts[3]);
+            vipExpiryDate = LocalDateTime.parse(parts[4]);
+        }
 
         payService.record(userId, TransactionType.PAYMENT, amount, "VNPay", txnRef);
         payService.createOrder(userId, postId, amount, "VNPay", OrderStatus.COMPLETED);
 
         Post post = postService.getById(Long.valueOf(postId));
+//        Change status when create
         if(post.getIsVip()==5){
             post.setStatus(PostStatus.APPROVED);
         }
         else {
             post.setStatus(PostStatus.PENDING);
+        }
+//        renew vip
+        if (isVip != null) {
+            post.setIsVip(isVip);
+        }
+        if (vipExpiryDate != null) {
+            post.setVipExpiryDate(vipExpiryDate);
         }
 //        post.setIsVip(6);
 //        post.setVipExpiryDate(LocalDateTime.now().plusDays(7));

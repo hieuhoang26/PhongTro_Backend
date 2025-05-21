@@ -10,6 +10,7 @@ import vn.hhh.phong_tro.dto.response.post.PostList;
 import vn.hhh.phong_tro.model.Post;
 import vn.hhh.phong_tro.util.PostStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostService {
@@ -17,7 +18,10 @@ public interface PostService {
     PostDetailResponse getPostById(Long id);
     String createPost(CreatePostRequest dto);
     void updatePost(Long id, UpdatePostRequest dto);
+
     void changePostStatus(Long id, PostStatus status);
+
+//    void renewVip(Long postId, Integer isVip,  LocalDateTime vipExpiryDate);
     void deletePost(Long id);
 
      PageResponse getPostsByUserAndStatus(Long userId, PostStatus status, int page, int size, String sortDirection);
