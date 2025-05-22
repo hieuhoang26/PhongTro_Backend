@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static vn.hhh.phong_tro.util.GeoUtil.generateGeoHash;
+
 @Service
 @RequiredArgsConstructor
 public class PostServiceImp implements PostService {
@@ -137,6 +139,9 @@ public class PostServiceImp implements PostService {
         address.setPost(savedPost);
         address.setWard(ward);
         address.setDetailAddress(request.getDetailAddress());
+        address.setLatitude(request.getLatitude());
+        address.setLongitude(request.getLongitude());
+        address.setGeoHash(generateGeoHash(request.getLatitude(),request.getLongitude()));
         savedPost.setPostAddress(address);
 
         // Upload images

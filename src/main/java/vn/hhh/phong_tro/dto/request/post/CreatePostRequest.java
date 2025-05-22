@@ -32,4 +32,7 @@ public class  CreatePostRequest {
 
     private String nameContact;
     private String phoneContact;
+    private Double latitude;
+    private Double longitude;
+
 }
