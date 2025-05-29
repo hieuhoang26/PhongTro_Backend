@@ -23,7 +23,7 @@ spring:
   flyway:
     locations: classpath:db/migration
     enabled: true
-    baseline-version: 6
+    baseline-version: 8
     baseline-on-migrate: false
   servlet:
     multipart:
@@ -50,6 +50,9 @@ vnpay:
 #  returnUrl: http://localhost:8080/api/v1/pay/return
   returnUrl: http://localhost:5173/vnpay-return
   ipnUrl: http://localhost:8080/api/v1/pay/ipn
+openai:
+  api:
+    key: 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
 
 
 

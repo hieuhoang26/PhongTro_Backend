@@ -39,6 +39,11 @@ public class FavoriteController {
         favoriteService.removeFavorite(userId, postId);
         return ResponseEntity.ok().body("Post unliked");
     }
+    // is Liked Post
+    @GetMapping("/like")
+    public ResponseEntity<?> isLiked(@RequestParam Long postId, @RequestParam Long userId) {
+        return ResponseEntity.ok().body(favoriteService.isLikedPost(userId,postId));
+    }
 
     // Lấy danh sách bài đăng đã thích
     @GetMapping

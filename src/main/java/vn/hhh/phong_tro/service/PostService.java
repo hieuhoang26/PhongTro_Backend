@@ -30,6 +30,8 @@ public interface PostService {
 
     List<PostList> getNearby(Double lat, Double lng, Integer typeId);
 
+    List<PostList> getLatest(Integer n);
+
     Post getById(Long id);
 
     void save(Post post);

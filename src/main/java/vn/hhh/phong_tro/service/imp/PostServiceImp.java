@@ -23,10 +23,7 @@ import vn.hhh.phong_tro.util.GeoUtil;
 import vn.hhh.phong_tro.util.PostStatus;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static vn.hhh.phong_tro.util.GeoUtil.generateGeoHash;
@@ -66,6 +63,8 @@ public class PostServiceImp implements PostService {
                 .map(PostImage::getImageUrl)
                 .toList();
 
+
+
         return PostDetailResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
@@ -102,7 +101,7 @@ public class PostServiceImp implements PostService {
         boolean isVerified = verifyService.checkIfUserVerified(user.getId());
         Long postCount = postRepository.countByUserId(user.getId());
 
-        if (!isVerified && postCount >= 2) {
+        if (!isVerified && postCount >= 2 && !Objects.equals(user.getRole().getName(), "ADMIN")) {
             throw new RuntimeException("Tài khoản chưa xác thực CCCD, chỉ được đăng tối đa 2 bài.");
         }
 
@@ -130,7 +129,8 @@ public class PostServiceImp implements PostService {
         post.setVipExpiryDate(request.getVipExpiryDate());
         post.setStatus(request.getStatus() != null ? request.getStatus() : PostStatus.PENDING);
         post.setCategories(categoryEntities);
-
+        post.setNameContact(request.getNameContact());
+        post.setPhoneContact(request.getPhoneContact());
         // Save để có postId
         Post savedPost = postRepository.save(post);
 
@@ -274,14 +274,6 @@ public class PostServiceImp implements PostService {
         postRepository.save(post);
     }
 
-//    @Override
-//    public void renewVip(Long postId, Integer isVip, LocalDateTime vipExpiryDate) {
-//        Post post = postRepository.findById(postId)
-//                .orElseThrow(() -> new RuntimeException("Post not found"));
-//        post.setIsVip(isVip);
-//        post.setVipExpiryDate(vipExpiryDate);
-//        postRepository.save(post);
-//    }
 
     @Override
     public void deletePost(Long id) {
@@ -413,6 +405,33 @@ public class PostServiceImp implements PostService {
 //        List<Post> posts = postRepository.findNearbyPostsByType(geoHashes, Long.valueOf(typeId));
         List<Post> posts = customGeoHash.findNearbyPostsByGeoHashPrefixes(geoHashes, Long.valueOf(typeId));
 
+        List<PostList> res = posts.stream().map(post -> {
+            List<String> imageUrls = post.getImages()
+                    .stream()
+                    .map(PostImage::getImageUrl)
+                    .toList();
+            return PostList.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .description(post.getDescription())
+                    .price(post.getPrice())
+                    .area(post.getArea())
+                    .address(post.getAddress())
+                    .images(imageUrls)
+                    .isVip(post.getIsVip())
+                    .username(post.getUser().getName())
+                    .phone(post.getUser().getPhone())
+                    .longitude(post.getPostAddress().getLongitude())
+                    .latitude(post.getPostAddress().getLatitude())
+                    .createdAt(post.getCreatedAt())
+                    .build();
+        }).toList();
+        return res;
+    }
+
+    @Override
+    public List<PostList> getLatest(Integer n) {
+        List<Post> posts = postRepository.findLatestPosts(PageRequest.of(0, n));
         List<PostList> res = posts.stream().map(post -> {
             List<String> imageUrls = post.getImages()
                     .stream()

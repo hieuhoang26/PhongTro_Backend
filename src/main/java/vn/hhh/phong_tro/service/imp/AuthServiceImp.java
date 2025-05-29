@@ -33,6 +33,7 @@ import vn.hhh.phong_tro.service.VerifyService;
 import vn.hhh.phong_tro.util.TokenType;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.REFERER;
@@ -62,7 +63,7 @@ public class AuthServiceImp implements AuthService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        System.out.println("Authorities:");
-        user.getAuthorities().forEach(a -> System.out.println(a.getAuthority()));
+//        user.getAuthorities().forEach(a -> System.out.println(a.getAuthority()));
 
         //Xóa các refresh token cũ (nếu không hỗ trợ đa thiết bị)
 //        refreshTokenService.deleteAllByUser(user);
@@ -82,7 +83,14 @@ public class AuthServiceImp implements AuthService {
 //                .map(GrantedAuthority::getAuthority)
 //                .filter(auth -> !auth.startsWith("ROLE_"))
 //                .toList();
-        boolean isVerify = verifyService.checkIfUserVerified(user.getId());
+        boolean isVerify;
+        System.out.println(user.getRole().getName());
+        if (Objects.equals(user.getRole().getName(), "ADMIN")){
+            isVerify = true;
+        }
+        else {
+            isVerify= verifyService.checkIfUserVerified(user.getId());
+        }
         TokenResponse.TokenResponseBuilder responseBuilder = TokenResponse.builder()
                 .id(String.valueOf(user.getId()))
                 .role(role)

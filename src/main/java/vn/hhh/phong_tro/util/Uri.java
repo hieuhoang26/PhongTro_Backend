@@ -37,6 +37,12 @@ public class Uri {
     /* Verify */
     public static final String Verify = "/api/v1/verify";
 
+    /* Report */
+    public static final String Report = "/api/v1/report";
+
+    /* Blog */
+    public static final String Blog = "/api/v1/blog";
+
 
 
 }

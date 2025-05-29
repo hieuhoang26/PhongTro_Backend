@@ -13,6 +13,7 @@ import vn.hhh.phong_tro.dto.response.statistic.TypeStatistic;
 import vn.hhh.phong_tro.model.Post;
 import vn.hhh.phong_tro.util.PostStatus;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     Page<Post> findByStatus(PostStatus status, Pageable pageable);
 
     Page<Post> findByUserIdAndStatus(Long userId, PostStatus status, Pageable pageable);
+
+    List<Post> findByStatusAndVipExpiryDateBefore(PostStatus status, LocalDateTime now);
 
     Long countByUserId(Long userId);
     @Query(value = """
@@ -37,6 +40,12 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
             @Param("geoHashes") Collection<String> geoHashes,
             @Param("typeId") Long typeId
     );
+
+    // Lấy n post mới nhất theo created_at giảm dần
+    @Query("SELECT p FROM Post p ORDER BY p.createdAt DESC")
+    List<Post> findLatestPosts(Pageable pageable);
+
+
     // Statistic
 
     @Query("SELECT COUNT(p) FROM Post p")

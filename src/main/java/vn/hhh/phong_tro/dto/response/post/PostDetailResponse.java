@@ -35,6 +35,7 @@ public class PostDetailResponse {
     private  Integer wardId;
     private Integer districtId;
     private Integer cityId;
+    private Boolean isLike;
 
 
     private String nameContact;

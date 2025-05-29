@@ -35,8 +35,9 @@ public class ChatService {
     }
 
     @Transactional
-    public List<MessageDTO> getMessages(Long conversationId) {
+    public List<MessageDTO> getMessages(Long conversationId,Long userId) {
         List<Message> list = messageRepo.findByConversationIdOrderBySentAtAsc(conversationId);
+        markMessagesAsRead(conversationId, userId);
         return list.stream()
                 .map(this::mapMessageToDTO)
                 .collect(Collectors.toList());
@@ -103,7 +104,19 @@ public class ChatService {
         return dto;
     }
 
-//    get all conversation of user
+    @Transactional
+    public void markMessagesAsRead(Long conversationId, Long readerId) {
+        List<Message> unreadMessages = messageRepo.findByConversationIdAndIsReadFalseAndSenderIdNot(
+                conversationId, readerId
+        );
+        for (Message message : unreadMessages) {
+            message.setIsRead(true);
+        }
+        messageRepo.saveAll(unreadMessages);
+    }
+
+
+    //    get all conversation of user
     public List<ConversationDTO> getUserConversations(Long userId) {
         List<Conversation> conversations = conversationRepo.findAllByUserId(userId);
 

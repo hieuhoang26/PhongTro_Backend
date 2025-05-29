@@ -75,45 +75,14 @@ public class ChatController {
     }
     @Operation(summary = "Get messages of conversation", description = "Return list of messages in a conversation")
     @GetMapping("/messages")
-    public ResponseEntity<List<MessageDTO>> getMessages(@RequestParam Long conversationId) {
-        List<MessageDTO> messages = chatService.getMessages(conversationId);
+    public ResponseEntity<List<MessageDTO>> getMessages(@RequestParam Long conversationId, @RequestParam Long userId) {
+        List<MessageDTO> messages = chatService.getMessages(conversationId,userId);
         if (messages.isEmpty()) {
             return ResponseEntity.noContent().build(); // trả về 204 No Content
         }
         return ResponseEntity.ok(messages);
     }
 
-
-
-
-//    private final MessageService messageService;
-
-//    @MessageMapping("/chat.send")
-//    public void sendMessage(@Payload ChatMessage dto, Principal principal) {
-//        // 1. Save message
-//        Message message = messageService.saveMessage(dto);
-//        log.info("message" + message);
-//        // 2. Send to receiver's WebSocket topic
-//        messagingTemplate.convertAndSendToUser(
-//                dto.getReceiverId(),
-//                "/queue/messages",
-//                message
-//        );
-//        log.info("ReceiverId" +   dto.getReceiverId());
-//    }
-
-//    @MessageMapping("/chat/send-by-topic")
-//    public void sendMessageByTopic(@Payload ChatMessage dto, Principal principal) {
-//        // 1. Save message
-//        Message message = messageService.saveMessage(dto);
-//        log.info("message" + message);
-//        // 2. Send to receiver's WebSocket topic
-//        messagingTemplate.convertAndSend(
-//                "/topic/conversation-1",
-//                message
-//        );
-//        log.info("ReceiverId" +   dto.getReceiverId());
-//    }
 
 
 

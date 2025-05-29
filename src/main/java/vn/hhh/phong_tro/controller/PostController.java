@@ -61,6 +61,15 @@ public class PostController {
         }
     }
 
+    @GetMapping("/latest")
+    public ResponseData<?> getLatest() {
+        try {
+            return new ResponseData<>(HttpStatus.OK.value(), "Get lastest", postService.getLatest(8));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
+
     @Operation(summary = "Advance search", description = "Return list ")
     @GetMapping("/filter")
     public ResponseData<?> advanceSearch(
@@ -136,20 +145,6 @@ public class PostController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
-
-//    @Operation(summary = "Renew  of post", description = "")
-//    @PatchMapping("/renew")
-//    public ResponseData<?> reNewPostVip(
-//            @RequestParam Long postId,
-//            @RequestParam Integer isVip,
-//            @RequestParam LocalDateTime dateTime) {
-//        try {
-//            postService.renewVip(postId, isVip, dateTime);
-//            return new ResponseData<>(HttpStatus.OK.value(), "change vip post successfully");
-//        } catch (Exception e) {
-//            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
-//        }
-//    }
 
     @Operation(summary = "Change Status of post", description = "")
     @PatchMapping("/{postId}")

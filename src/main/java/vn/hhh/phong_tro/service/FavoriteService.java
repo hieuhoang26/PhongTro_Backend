@@ -46,6 +46,11 @@ public class FavoriteService {
         favoritePostRepository.save(favoritePost);
     }
 
+    @Transactional
+    public boolean isLikedPost(Long userId, Long postId){
+        return favoritePostRepository.existsByUserIdAndPostId(userId, postId);
+    }
+
 
     @Transactional
     public void removeFavorite(Long userId, Long postId) {

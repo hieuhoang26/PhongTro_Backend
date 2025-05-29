@@ -1,6 +1,8 @@
 package vn.hhh.phong_tro.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vn.hhh.phong_tro.dto.request.VerificationRequest;
@@ -16,6 +18,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +31,10 @@ public class VerifyService {
 
         // 1. Upload ảnh lên S3
         MultipartFile file = request.getFrontImageUrl();
-        String ImageUrl = file != null
-                ? s3Service.upload(file)
-                : null;
-
+        String ImageUrl = "";
+        if (file != null) {
+            ImageUrl =  s3Service.upload(file);
+        }
         // 2. Hash CCCD
         String hashedCCCD = hashCCCD(request.getCccdNumber());
         User user = userService.getById(request.getUserId());
@@ -49,21 +52,25 @@ public class VerifyService {
         return Math.toIntExact(verification.getId());
     }
 
-    public void approveVerification(Integer id){
+    public void approveVerification(Integer id, VerifyStatus status) {
         Verify verification = verifyRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Verification not found"));
-        if(!verification.getFrontImageUrl().isEmpty()){
+        if (!verification.getFrontImageUrl().isEmpty()) {
             s3Service.delete(s3Service.extractKeyFromUrl(verification.getFrontImageUrl()));
 
         }
-        verification.setStatus(VerifyStatus.APPROVED);
+        verification.setStatus(status);
         verification.setApprovedAt(LocalDateTime.now());
         verifyRepository.save(verification);
+    }
+    public Page<Verify> getByStatus(VerifyStatus status, Pageable pageable) {
+        return verifyRepository.findByStatus(status, pageable);
     }
 
     public boolean checkIfUserVerified(Long userId) {
         return verifyRepository.existsByUserIdAndStatus(userId, VerifyStatus.APPROVED);
     }
+
     public String hashCCCD(String cccdNumber) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
