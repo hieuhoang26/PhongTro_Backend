@@ -24,6 +24,11 @@ public class ChatService {
     private final MessageRepository messageRepo;
      private final UserRepository userRepo; // nếu cần
 
+    public  boolean hasUnreadMessages(Long userId) {
+        long count = messageRepo.countUnreadMessagesByUser(userId);
+        return count > 0;
+    }
+
     public Message saveMessage(Integer senderId, Integer receiverId, String content, String contentType) {
         Conversation conversation = getOrCreateConversation(Long.valueOf(senderId), Long.valueOf(receiverId));
         Message message = new Message();
@@ -151,6 +156,8 @@ public class ChatService {
             return dto;
         }).collect(Collectors.toList());
     }
+
+
 
 
 

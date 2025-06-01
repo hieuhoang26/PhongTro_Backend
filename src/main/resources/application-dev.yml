@@ -29,6 +29,19 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 100MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hhh262434@gmail.com
+    password: zcvvdmjaqtdlzbif
+    protocol: smtp
+    properties:
+      mail.smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+    from: ${MAIL_FROM:hhh262434@gmail.com}
 
 
 aws:

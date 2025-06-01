@@ -55,10 +55,10 @@ public class VerifyService {
     public void approveVerification(Integer id, VerifyStatus status) {
         Verify verification = verifyRepository.findById(Long.valueOf(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Verification not found"));
-        if (!verification.getFrontImageUrl().isEmpty()) {
-            s3Service.delete(s3Service.extractKeyFromUrl(verification.getFrontImageUrl()));
-
-        }
+//        if (!verification.getFrontImageUrl().isEmpty()) {
+//            s3Service.delete(s3Service.extractKeyFromUrl(verification.getFrontImageUrl()));
+//
+//        }
         verification.setStatus(status);
         verification.setApprovedAt(LocalDateTime.now());
         verifyRepository.save(verification);

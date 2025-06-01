@@ -18,6 +18,11 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     long countByConversationAndIsReadFalseAndSenderIdNot(Conversation conversation, Long senderId);
 
     List<Message> findByConversationIdAndIsReadFalseAndSenderIdNot(Long conversationId, Long senderId);
+    @Query("SELECT COUNT(m) FROM Message m " +
+            "WHERE m.conversation.id IN (" +
+            "SELECT c.id FROM Conversation c WHERE c.user1.id = :userId OR c.user2.id = :userId" +
+            ") AND m.sender.id <> :userId AND m.isRead = false")
+    long countUnreadMessagesByUser(@Param("userId") Long userId);
 
 
 //    List<Message> findByReceiverId(String receiverId);

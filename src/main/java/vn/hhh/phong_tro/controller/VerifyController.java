@@ -40,7 +40,7 @@ public class VerifyController {
         }
     }
     @Operation(summary = "approve identifier", description = "")
-    @PutMapping()
+    @PatchMapping()
     public ResponseData<?> updateP(@RequestParam Integer id, @RequestParam VerifyStatus status) {
         try {
             verifyService.approveVerification(id,status);

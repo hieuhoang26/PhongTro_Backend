@@ -23,9 +23,17 @@ public class BotController {
     @PostMapping
     public ResponseEntity<?> handleNaturalLanguageQuery(@RequestBody Map<String, String> body) {
         String question = body.get("question");
+        String mode = body.get("mode");
 
         if (question == null || question.isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Missing question"));
+        }
+        if ("1".equals(mode)) {
+            // Hỏi đáp thông thường
+            String answer = openAiService.askQuestionNormally(question);
+            return ResponseEntity.ok(Map.of(
+                    "answer", answer
+            ));
         }
 
         String rawSql = openAiService.generateSqlFromQuestion(question);
@@ -50,10 +58,8 @@ public class BotController {
             ));
         }
     }
-    /**
-     * Tách câu lệnh SQL trong đoạn text có format markdown ```sql ... ```
-     * Nếu không tìm thấy sẽ cố gắng tìm câu lệnh bắt đầu bằng SELECT
-     */
+
+
     public static String extractSql(String text) {
         if (text == null || text.isEmpty()) {
             return null;

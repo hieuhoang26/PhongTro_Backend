@@ -29,6 +29,4 @@ public class UserRequest {
 
     private String avatarUrl;
 
-//    @EnumPattern(name = "status", regexp = "ACTIVE|INACTIVE|NONE")
-//    private UserStatus status;
 }

@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import vn.hhh.phong_tro.dto.ResetPasswordEmailDto;
 import vn.hhh.phong_tro.dto.request.auth.LogInRequest;
 import vn.hhh.phong_tro.dto.request.auth.ResetPasswordRequest;
 import vn.hhh.phong_tro.dto.request.auth.SignUpRequest;
@@ -26,10 +27,8 @@ import vn.hhh.phong_tro.model.Role;
 import vn.hhh.phong_tro.model.User;
 import vn.hhh.phong_tro.security.Imp.UserDetailServiceImp;
 import vn.hhh.phong_tro.security.JwtService;
-import vn.hhh.phong_tro.service.AuthService;
-import vn.hhh.phong_tro.service.RoleService;
-import vn.hhh.phong_tro.service.UserService;
-import vn.hhh.phong_tro.service.VerifyService;
+import vn.hhh.phong_tro.service.*;
+import vn.hhh.phong_tro.util.EmailType;
 import vn.hhh.phong_tro.util.TokenType;
 
 import java.util.List;
@@ -53,6 +52,7 @@ public class AuthServiceImp implements AuthService {
     final UserDetailServiceImp userDetailServiceImp;
     final RoleService roleService;
     final VerifyService verifyService;
+    final MailService mailService;
 
 
     @Override
@@ -173,34 +173,37 @@ public class AuthServiceImp implements AuthService {
      */
     @Override
     public String forgotPassword(String email) {
-        // check email exists or not
+        // 1. Kiểm tra email tồn tại
         User user = userService.getByEmail(email);
-        // generate reset token
+
+        // 2. Tạo reset token (JWT)
         String resetToken = jwtService.generateResetToken(user);
 
-        // save to db
-//        tokenService.save(Token.builder().username(user.getUsername()).resetToken(resetToken).build());
+        // 3. Tạo URL để reset password (link FE có gắn token)
+        String resetUrl = String.format("http://localhost:5173/cap-lai-mat-khau?token=%s", resetToken);
 
-        // TODO send email to user
-        String confirmLink = String.format("curl --location 'http://localhost:80/auth/reset-password' \\\n" +
-                "--header 'accept: */*' \\\n" +
-                "--header 'Content-Type: application/json' \\\n" +
-                "--data '%s'", resetToken);
-        log.info("--> confirmLink: {}", confirmLink);
+        // 4. Gửi email
+        ResetPasswordEmailDto dto = new ResetPasswordEmailDto(user.getPhone(), resetUrl);
+        try {
+//            mailService.sendEmailV2(user.getEmail(), "Reset your password", dto, EmailType.Auth);
+            mailService.sendEmailV2("hoanghuyhieu2003@gmail.com", "Reset your password", dto, EmailType.Auth);
+        } catch (Exception e) {
+            log.error("Failed to send reset password email", e);
+            throw new RuntimeException("Unable to send reset email. Please try again later.");
+        }
 
-        return resetToken;
-//        return null;
+        log.info("Reset password link sent to email: {}", email);
+        return "Reset password email sent";
     }
+
 
     @Override
     public String changePassword(ResetPasswordRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new InvalidDataException("Passwords do not match");
         }
-
         // get user by reset token
         var user = validateToken(request.getSecretKey());
-
         // update password
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userService.save(user);
@@ -221,7 +224,7 @@ public class AuthServiceImp implements AuthService {
         // validate user is active or not
         var user = userService.getByPhone(phone);
 
-        if (userService.existPhone(phone)) {
+        if (!userService.existPhone(phone)) {
             throw new InvalidDataException("User not active");
         }
         return user;

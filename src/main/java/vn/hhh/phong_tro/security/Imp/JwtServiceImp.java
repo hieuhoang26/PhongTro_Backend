@@ -57,7 +57,7 @@ public class JwtServiceImp implements JwtService {
 
     @Override
     public String generateResetToken(UserDetails user) {
-        return null;
+        return generateRefreshToken(new HashMap<>(), user);
     }
 
     @Override

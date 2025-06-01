@@ -400,7 +400,7 @@ public class PostServiceImp implements PostService {
     @Override
     public List<PostList> getNearby(Double lat, Double lng, Integer typeId) {
 //        List<Post> posts = postRepository.findNearbyPostsByType(lat, lng, Long.valueOf(typeId));
-        Set<String> geoHashes = GeoUtil.getGeoHashSearchAreas(lat, lng, 6);
+        Set<String> geoHashes = GeoUtil.getGeoHashSearchAreas(lat, lng, 5);
         System.out.println(geoHashes);
 //        List<Post> posts = postRepository.findNearbyPostsByType(geoHashes, Long.valueOf(typeId));
         List<Post> posts = customGeoHash.findNearbyPostsByGeoHashPrefixes(geoHashes, Long.valueOf(typeId));

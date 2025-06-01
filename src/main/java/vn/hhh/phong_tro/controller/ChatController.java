@@ -83,6 +83,12 @@ public class ChatController {
         return ResponseEntity.ok(messages);
     }
 
+    @GetMapping("/unread")
+    public ResponseEntity<Boolean> checkUnread(@RequestParam Long userId) {
+        boolean hasUnread = chatService.hasUnreadMessages(userId);
+        return ResponseEntity.ok(hasUnread);
+    }
+
 
 
 
