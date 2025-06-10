@@ -42,7 +42,7 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     );
 
     // Lấy n post mới nhất theo created_at giảm dần
-    @Query("SELECT p FROM Post p ORDER BY p.createdAt DESC")
+    @Query("SELECT p FROM Post p WHERE p.status = 'APPROVED' ORDER BY p.createdAt DESC")
     List<Post> findLatestPosts(Pageable pageable);
 
     @Query("SELECT p FROM Post p " +

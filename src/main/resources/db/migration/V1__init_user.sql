@@ -140,8 +140,8 @@ WHERE r.name = 'ADMIN';
 -- Users
 INSERT INTO users (name, email, password, full_name, phone, avatar_url, role_id)
 VALUES ('user1', 'user1@gmail.com', '$2a$10$FDuNMw.4KzfQ5QeuPBRpUe3/6rX1Wr./e1C2qok50tbdHHi9pIZ0S', 'User_Search',
-        '123456789', 'https://example.com/avatar1.jpg', 1),
+        '0111111111', 'https://phongtro123.com/images/default-user.svg', 1),
        ('user2', 'user2@example.com', '$2a$10$FDuNMw.4KzfQ5QeuPBRpUe3/6rX1Wr./e1C2qok50tbdHHi9pIZ0S', 'User_Host',
-        '011111111', 'https://example.com/avatar2.jpg', 2),
+        '0123456789', 'https://phongtro123.com/images/default-user.svg', 2),
        ('admin', 'admin@example.com', '$2a$10$FDuNMw.4KzfQ5QeuPBRpUe3/6rX1Wr./e1C2qok50tbdHHi9pIZ0S', 'Administrator',
-        '987654321', 'https://example.com/avatar2.jpg', 3);
+        '0987654321', 'https://phongtro123.com/images/default-user.svg', 3);

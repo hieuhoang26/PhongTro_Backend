@@ -39,6 +39,7 @@ public class PostServiceImp implements PostService {
     final FavoriteService favoriteService;
     final CustomGeoHash customGeoHash;
     final VerifyService verifyService;
+    final NotificationService notificationService;
 
     final UserService userService;
     final S3Service s3Service;
@@ -160,15 +161,15 @@ public class PostServiceImp implements PostService {
             }
         }
         // Upload video (nếu có)
-        if (request.getVideo() != null && !request.getVideo().isEmpty()) {
-            String videoUrl = s3Service.upload(request.getVideo());
-            PostImage video = new PostImage();
-            video.setPost(savedPost);
-            video.setImageUrl(videoUrl);
-            postImages.add(video);
-        } else if (request.getVideoLink() != null) {
-            savedPost.setDescription(savedPost.getDescription() + "\nVideo: " + request.getVideoLink());
-        }
+//        if (request.getVideo() != null && !request.getVideo().isEmpty()) {
+//            String videoUrl = s3Service.upload(request.getVideo());
+//            PostImage video = new PostImage();
+//            video.setPost(savedPost);
+//            video.setImageUrl(videoUrl);
+//            postImages.add(video);
+//        } else if (request.getVideoLink() != null) {
+//            savedPost.setDescription(savedPost.getDescription() + "\nVideo: " + request.getVideoLink());
+//        }
         savedPost.setImages(postImages);
         postRepository.save(savedPost);
         return savedPost.getId().toString();
@@ -271,6 +272,11 @@ public class PostServiceImp implements PostService {
 
         post.setStatus(status);
         post.setUpdatedAt(LocalDateTime.now());
+        if (status == PostStatus.APPROVED){
+            notificationService.sendNotification(post.getUser().getId(),"post_update", "Trạng thái bài đăng","Bài đăng đã được Admin duyệt!");
+        } else if (status == PostStatus.REJECTED) {
+            notificationService.sendNotification(post.getUser().getId(),"post_update", "Trạng thái bài đăng","Bài đăng đã được Admin từ chối!");
+        }
         postRepository.save(post);
     }
 
