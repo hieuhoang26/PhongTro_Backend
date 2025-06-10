@@ -8,25 +8,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequest {
-    @NotBlank(message = "firstName must be not blank")
     private String name;
-    @Email(message = "email invalid format")
     private String email;
-
-    @NotNull(message = "password must be not null")
     private String password;
-
-    //@Pattern(regexp = "^\\d{10}$", message = "phone invalid format")
-//    @PhoneNumber(message = "phone invalid format")
     private String phone;
     private String role;
-
-    private String avatarUrl;
+    private MultipartFile avatarUrl;
 
 }

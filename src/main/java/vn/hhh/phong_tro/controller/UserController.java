@@ -27,17 +27,17 @@ public class UserController {
 
     private final UserService userService;
 
-    @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
-    @PostMapping(value = "/")
-    public ResponseData<Long> addUser(@Valid @RequestBody UserRequest request) {
-        log.info("Request add user, {} {}", request.getName(), request.getPhone());
-        long userId = userService.addUser(request);
-        return new ResponseData<>(HttpStatus.CREATED.value(), "User has added successfully", userId);
-    }
+//    @Operation(method = "POST", summary = "Add new user", description = "Send a request via this API to create new user")
+//    @PostMapping(value = "/")
+//    public ResponseData<Long> addUser(@Valid @RequestBody UserRequest request) {
+//        log.info("Request add user, {} {}", request.getName(), request.getPhone());
+//        long userId = userService.addUser(request);
+//        return new ResponseData<>(HttpStatus.CREATED.value(), "User has added successfully", userId);
+//    }
 
     @Operation(summary = "Update user", description = "Send a request via this API to update user")
     @PutMapping("/{userId}")
-    public ResponseData<?> updateUser(@PathVariable long userId, @Valid @RequestBody UserRequest request) {
+    public ResponseData<?> updateUser(@PathVariable long userId, @ModelAttribute UserRequest request) {
         log.info("Request update userId={}", userId);
 
         try {

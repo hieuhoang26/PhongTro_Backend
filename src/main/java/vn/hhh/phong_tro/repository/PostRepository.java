@@ -45,6 +45,18 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     @Query("SELECT p FROM Post p ORDER BY p.createdAt DESC")
     List<Post> findLatestPosts(Pageable pageable);
 
+    @Query("SELECT p FROM Post p " +
+            "JOIN p.postAddress pa " +
+            "JOIN pa.ward w " +
+            "JOIN w.district d " +
+            "WHERE p.type.id = :typeId " +
+            "AND d.id = :districtId " +
+            "AND p.id <> :currentPostId")
+    List<Post> findByTypeAndDistrictExcludeCurrent(@Param("typeId") Long typeId,
+                                                   @Param("districtId") Long districtId,
+                                                   @Param("currentPostId") Long currentPostId);
+
+
 
     // Statistic
 

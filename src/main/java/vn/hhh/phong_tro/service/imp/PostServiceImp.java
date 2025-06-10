@@ -457,6 +457,33 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
+    public List<PostList> getNearDistrict(Integer type ,Integer districtId,Integer postId) {
+        List<Post> posts = postRepository.findByTypeAndDistrictExcludeCurrent(Long.valueOf(type),Long.valueOf(districtId),Long.valueOf(postId));
+        List<PostList> res = posts.stream().map(post -> {
+            List<String> imageUrls = post.getImages()
+                    .stream()
+                    .map(PostImage::getImageUrl)
+                    .toList();
+            return PostList.builder()
+                    .id(post.getId())
+                    .title(post.getTitle())
+                    .description(post.getDescription())
+                    .price(post.getPrice())
+                    .area(post.getArea())
+                    .address(post.getAddress())
+                    .images(imageUrls)
+                    .isVip(post.getIsVip())
+                    .username(post.getUser().getName())
+                    .phone(post.getUser().getPhone())
+                    .longitude(post.getPostAddress().getLongitude())
+                    .latitude(post.getPostAddress().getLatitude())
+                    .createdAt(post.getCreatedAt())
+                    .build();
+        }).toList();
+        return res;
+    }
+
+    @Override
     public Post getById(Long id) {
         return postRepository.findById(id).orElse(null);
     }

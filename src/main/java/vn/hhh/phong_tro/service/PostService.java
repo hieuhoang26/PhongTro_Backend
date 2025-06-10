@@ -32,6 +32,8 @@ public interface PostService {
 
     List<PostList> getLatest(Integer n);
 
+    List<PostList> getNearDistrict(Integer type ,Integer districtId, Integer postId);
+
     Post getById(Long id);
 
     void save(Post post);

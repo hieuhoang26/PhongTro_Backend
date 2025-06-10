@@ -69,6 +69,16 @@ public class PostController {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
         }
     }
+    @GetMapping("/near-district")
+    public ResponseData<?> getNearDistrict(@RequestParam Integer type,
+                                           @RequestParam Integer district,
+                                           @RequestParam Integer postId) {
+        try {
+            return new ResponseData<>(HttpStatus.OK.value(), "Get lastest", postService.getNearDistrict(type,district,postId));
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
+    }
 
     @Operation(summary = "Advance search", description = "Return list ")
     @GetMapping("/filter")

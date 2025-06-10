@@ -14,6 +14,7 @@ import vn.hhh.phong_tro.model.Role;
 import vn.hhh.phong_tro.model.User;
 import vn.hhh.phong_tro.repository.UserRepository;
 import vn.hhh.phong_tro.service.RoleService;
+import vn.hhh.phong_tro.service.S3Service;
 import vn.hhh.phong_tro.service.UserService;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class UserServiceImp implements UserService {
     final UserRepository userRepository;
     final PasswordEncoder passwordEncoder;
     final RoleService roleService;
+    final S3Service s3Service;
 
     @Override
     public void save(User user) {
@@ -48,7 +50,7 @@ public class UserServiceImp implements UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
                 .role(role)
-                .avatarUrl(request.getAvatarUrl())
+//                .avatarUrl(request.getAvatarUrl())
                 .build();
         userRepository.save(user);
         log.info("User has added successfully, userId={}", user.getId());
@@ -70,7 +72,11 @@ public class UserServiceImp implements UserService {
         if (request.getEmail() != null) user.setEmail(request.getEmail());
         if (request.getPassword() != null) user.setPassword(passwordEncoder.encode(request.getPassword()));
         if (request.getPhone() != null) user.setPhone(request.getPhone());
-        if (request.getAvatarUrl() != null) user.setAvatarUrl(request.getAvatarUrl());
+
+        if (request.getAvatarUrl() != null && !request.getAvatarUrl().isEmpty()) {
+            String avatarUrl = s3Service.upload(request.getAvatarUrl());
+            user.setAvatarUrl(avatarUrl);
+        }
 
         if (request.getRole() != null) {
             Role role = roleService.getByRoleId(Integer.parseInt(request.getRole()));
