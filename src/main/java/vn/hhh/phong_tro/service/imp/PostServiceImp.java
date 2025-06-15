@@ -272,6 +272,9 @@ public class PostServiceImp implements PostService {
 
         post.setStatus(status);
         post.setUpdatedAt(LocalDateTime.now());
+        if (status == PostStatus.EXPIRED){
+            post.setIsVip(0);
+        }
         if (status == PostStatus.APPROVED){
             notificationService.sendNotification(post.getUser().getId(),"post_update", "Trạng thái bài đăng","Bài đăng đã được Admin duyệt!");
         } else if (status == PostStatus.REJECTED) {
@@ -345,7 +348,6 @@ public class PostServiceImp implements PostService {
 //        System.out.println("Sorting by: " + filter.getSortBy() + " " + filter.getSortDirection());
 //        System.out.println("Page: " + pageable.getPageNumber() + ", Size: " +  pageable.getPageSize());
 
-        Set<Long> likedPostIds = (userId != null) ? favoriteService.getFavoritePostIds(Long.valueOf(userId)) : Collections.emptySet();
 
         Sort sort = Sort.unsorted();
         if (filter.getSortBy() != null && filter.getSortDirection() != null) {
@@ -358,8 +360,9 @@ public class PostServiceImp implements PostService {
         PostSpecificationsBuilder builder = new PostSpecificationsBuilder(filter);
         Page<Post> posts = postRepository.findAll(builder.build(), sortedPageable);
 
-//        Set<Long> likedPostIds = (userId != null) ? favoriteService.getFavoritePostIds(userId) : Collections.emptySet();
+        Set<Long> likedPostIds = (userId != null) ? favoriteService.getFavoritePostIds(Long.valueOf(userId)) : Collections.emptySet();
 
+//        Set<Long> likedPostIds = (userId != null) ? favoriteService.getFavoritePostIds(userId) : Collections.emptySet();
         List<PostList> res = posts.stream().map(post -> {
             String fullAddress = post.getAddress();
             String shortAddress = "";
@@ -389,8 +392,8 @@ public class PostServiceImp implements PostService {
                     .images(imageUrls)
                     .isLike(isLiked)
                     .isVip(post.getIsVip())
-                    .username(post.getUser().getName())
-                    .phone(post.getUser().getPhone())
+                    .username(post.getNameContact())
+                    .phone(post.getPhoneContact())
                     .createdAt(post.getCreatedAt())
                     .build();
         }).toList();

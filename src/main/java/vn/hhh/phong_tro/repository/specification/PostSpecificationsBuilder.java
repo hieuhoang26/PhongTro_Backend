@@ -98,9 +98,13 @@ public class PostSpecificationsBuilder {
         };
     }
     private Specification<Post> hasStatus() {
+//        return (root, query, cb) -> {
+//            if (filter.getStatus() == null) return null;
+//            return cb.equal(root.get("status"), filter.getStatus());
+//        };
         return (root, query, cb) -> {
-            if (filter.getStatus() == null) return null;
-            return cb.equal(root.get("status"), filter.getStatus());
+            if (filter.getStatus() == null || filter.getStatus().isEmpty()) return null;
+            return root.get("status").in(filter.getStatus());
         };
     }
 

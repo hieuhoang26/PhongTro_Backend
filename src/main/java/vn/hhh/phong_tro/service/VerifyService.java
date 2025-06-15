@@ -10,6 +10,7 @@ import vn.hhh.phong_tro.exception.ResourceNotFoundException;
 import vn.hhh.phong_tro.model.User;
 import vn.hhh.phong_tro.model.Verify;
 import vn.hhh.phong_tro.repository.VerifyRepository;
+import vn.hhh.phong_tro.util.PostStatus;
 import vn.hhh.phong_tro.util.VerifyStatus;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class VerifyService {
     private final VerifyRepository verifyRepository;
     private final UserService userService;
     private final S3Service s3Service;
+    private final NotificationService notificationService;
 
     public Integer submitVerification(VerificationRequest request) throws IOException {
 
@@ -61,6 +63,12 @@ public class VerifyService {
 //        }
         verification.setStatus(status);
         verification.setApprovedAt(LocalDateTime.now());
+
+        if (status == VerifyStatus.APPROVED){
+            notificationService.sendNotification(verification.getUser().getId(),"system", "Trạng thái tài khoản","Tài khoản đã được Admin duyệt!");
+        } else if (status == VerifyStatus.REJECTED) {
+            notificationService.sendNotification(verification.getUser().getId(),"system", "Trạng thái tài khoản","Cần xác minh lại tài khoản!");
+        }
         verifyRepository.save(verification);
     }
     public Page<Verify> getByStatus(VerifyStatus status, Pageable pageable) {

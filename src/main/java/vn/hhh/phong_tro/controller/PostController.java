@@ -94,11 +94,16 @@ public class PostController {
             @RequestParam(required = false) Long wardId,
             @RequestParam(required = false) String categoryIds, // nhận dạng chuỗi "1,2"
             @RequestParam(required = false) Integer isVip,
-            @RequestParam(required = false) PostStatus status,
+            @RequestParam(required = false) String status,
+//            @RequestParam(required = false) List<PostStatus> status,
+
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String sortDirection,
             @RequestParam(required = false) Integer userId
     ) {
+
+
+
         PostFilterRequest filterRequest = new PostFilterRequest();
         filterRequest.setTypeId(typeId);
         filterRequest.setMinPrice(minPrice);
@@ -110,7 +115,14 @@ public class PostController {
         filterRequest.setWardId(wardId);
         filterRequest.setIsVip(isVip);
         filterRequest.setSortBy(sortBy);
-        filterRequest.setStatus(status);
+//        filterRequest.setStatus(status);
+        if (status != null && !status.isBlank()) {
+            List<PostStatus> statusList = Arrays.stream(status.split(","))
+                    .map(String::trim)
+                    .map(PostStatus::valueOf)
+                    .toList();
+            filterRequest.setStatus(statusList);
+        }
         filterRequest.setSortDirection(sortDirection);
 
         if (categoryIds != null && !categoryIds.isBlank()) {

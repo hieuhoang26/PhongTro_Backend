@@ -117,10 +117,10 @@ public class AuthServiceImp implements AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword() != null ? request.getPassword() : "1234"))
                 .name(request.getName())
+                .isActive(true)
                 .avatarUrl("https://phongtro123.com/images/default-user.svg")
                 .role(role)
                 .build();
-
         userService.save(user);
         return new ResponseData(HttpStatus.OK.value(), "Sign Up successful");
     }

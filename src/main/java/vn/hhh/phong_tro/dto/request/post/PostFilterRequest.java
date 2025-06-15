@@ -17,7 +17,8 @@ public class PostFilterRequest {
     private Long districtId;
     private Long wardId;
     private List<Long> categoryIds;
-    private PostStatus status;
+//    private PostStatus status;
+    private List<PostStatus> status;
     private Integer isVip; // lọc bài VIP
     private String sortBy; // ví dụ: "createdAt", "price"
     private String sortDirection; // "asc" hoặc "desc"

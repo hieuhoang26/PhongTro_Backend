@@ -27,4 +27,11 @@ public class Scheduler {
 
         postRepository.saveAll(expiredPosts);
     }
+
+    @Scheduled(cron = "0 0 2 * * ?") // Chạy mỗi ngày lúc 2:00 AM
+    public void deleteExpiredPayingPosts() {
+        LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
+        postRepository.deleteOldPayingPosts(PostStatus.PAYING, threeDaysAgo);
+        System.out.println("Deleted expired PAYING posts created before " + threeDaysAgo);
+    }
 }
