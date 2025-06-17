@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import vn.hhh.phong_tro.dto.PostStatusRequest;
 import vn.hhh.phong_tro.dto.request.post.CreatePostRequest;
 import vn.hhh.phong_tro.dto.request.post.PostFilterRequest;
 import vn.hhh.phong_tro.dto.request.post.UpdatePostRequest;
@@ -172,9 +173,10 @@ public class PostController {
     @PatchMapping("/{postId}")
     public ResponseData<?> changePostStatus(
             @PathVariable Long postId,
-            @RequestBody PostStatus status) {
+            @RequestBody PostStatusRequest request
+    ) {
         try {
-            postService.changePostStatus(postId, status);
+            postService.changePostStatus(postId, request);
             return new ResponseData<>(HttpStatus.OK.value(), "change status post successfully");
         } catch (Exception e) {
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());

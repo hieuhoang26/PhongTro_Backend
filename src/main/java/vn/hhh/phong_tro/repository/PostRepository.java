@@ -91,4 +91,9 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
     @Query("DELETE FROM Post p WHERE p.status = :status AND p.createdAt <= :threshold")
     void deleteOldPayingPosts(@Param("status") PostStatus status, @Param("threshold") LocalDateTime threshold);
 
+    @Modifying
+    @Query("UPDATE Post p SET p.status = 'REJECTED' WHERE p.status = 'EXPIRED' AND p.updatedAt < :thresholdDate")
+    void rejectExpiredPostsOlderThan(@Param("thresholdDate") LocalDateTime thresholdDate);
+
+
 }

@@ -1,6 +1,7 @@
 package vn.hhh.phong_tro.service;
 
 import org.springframework.data.domain.Pageable;
+import vn.hhh.phong_tro.dto.PostStatusRequest;
 import vn.hhh.phong_tro.dto.request.post.PostFilterRequest;
 import vn.hhh.phong_tro.dto.request.post.CreatePostRequest;
 import vn.hhh.phong_tro.dto.request.post.UpdatePostRequest;
@@ -19,7 +20,7 @@ public interface PostService {
     String createPost(CreatePostRequest dto);
     void updatePost(Long id, UpdatePostRequest dto);
 
-    void changePostStatus(Long id, PostStatus status);
+    void changePostStatus(Long id, PostStatusRequest request);
 
 //    void renewVip(Long postId, Integer isVip,  LocalDateTime vipExpiryDate);
     void deletePost(Long id);

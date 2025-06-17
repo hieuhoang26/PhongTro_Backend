@@ -31,6 +31,9 @@ public class VerifyService {
 
     public Integer submitVerification(VerificationRequest request) throws IOException {
 
+        // Kiểm tra nếu đã tồn tại bản ghi cho user này → không cho phép tạo thêm
+
+
         // 1. Upload ảnh lên S3
         MultipartFile file = request.getFrontImageUrl();
         String ImageUrl = "";
@@ -40,6 +43,9 @@ public class VerifyService {
         // 2. Hash CCCD
         String hashedCCCD = hashCCCD(request.getCccdNumber());
         User user = userService.getById(request.getUserId());
+        if (verifyRepository.existsByUserId(Long.valueOf(request.getUserId()))) {
+            throw new IllegalStateException("User has already submitted verification.");
+        }
         // 3. Lưu vào DB
         Verify verification = new Verify();
         verification.setUser(user);
@@ -68,6 +74,7 @@ public class VerifyService {
             notificationService.sendNotification(verification.getUser().getId(),"system", "Trạng thái tài khoản","Tài khoản đã được Admin duyệt!");
         } else if (status == VerifyStatus.REJECTED) {
             notificationService.sendNotification(verification.getUser().getId(),"system", "Trạng thái tài khoản","Cần xác minh lại tài khoản!");
+            verifyRepository.delete(verification);
         }
         verifyRepository.save(verification);
     }

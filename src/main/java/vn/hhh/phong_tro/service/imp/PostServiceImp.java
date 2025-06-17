@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import vn.hhh.phong_tro.dto.PostStatusRequest;
 import vn.hhh.phong_tro.dto.request.post.PostFilterRequest;
 import vn.hhh.phong_tro.dto.request.post.CreatePostRequest;
 import vn.hhh.phong_tro.dto.request.post.UpdatePostRequest;
@@ -266,19 +267,22 @@ public class PostServiceImp implements PostService {
     }
 
     @Override
-    public void changePostStatus(Long postId, PostStatus status) {
+    public void changePostStatus(Long postId, PostStatusRequest request) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-
+        PostStatus status = request.getStatus();
         post.setStatus(status);
         post.setUpdatedAt(LocalDateTime.now());
+
         if (status == PostStatus.EXPIRED){
             post.setIsVip(0);
+            post.setVipExpiryDate(LocalDateTime.now());
+
         }
         if (status == PostStatus.APPROVED){
             notificationService.sendNotification(post.getUser().getId(),"post_update", "Trạng thái bài đăng","Bài đăng đã được Admin duyệt!");
         } else if (status == PostStatus.REJECTED) {
-            notificationService.sendNotification(post.getUser().getId(),"post_update", "Trạng thái bài đăng","Bài đăng đã được Admin từ chối!");
+            notificationService.sendNotification(post.getUser().getId(),"post_update", "Trạng thái bài đăng","Bài đăng đã được Admin từ chối!. Lý do:"+ request.getReason());
         }
         postRepository.save(post);
     }

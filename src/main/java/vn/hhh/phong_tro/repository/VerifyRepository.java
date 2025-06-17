@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface VerifyRepository extends JpaRepository<Verify,Long> {
     boolean existsByUserIdAndStatus(Long userId, VerifyStatus status);
+    boolean existsByUserId(Long userId);
 
     Page<Verify> findByStatus(VerifyStatus status, Pageable pageable);
 }
